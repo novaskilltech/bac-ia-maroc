@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | BAC IA MAROC</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Markdown & Math Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js?v=3"></script>
+    <script src="js/courses-data.js?v=3"></script>
+    <script src="js/ai-tutor.js?v=14"></script>
+    <script src="js/revision-planner.js?v=1"></script>
+</head>
+<body>
+    <div class="premium-bg"></div>
+
+    <div id="loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <div class="fa-solid fa-brain fa-beat" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></div>
+            <p style="letter-spacing: 2px; font-weight: 300;">SYNCHRONISATION IA...</p>
+        </div>
+    </div>
+
+    <div id="main-content" style="display: none; height: 100vh; display: flex; flex-direction: column;">
+        <!-- Sidebar and Content Wrapper -->
+        <div style="display: flex; flex: 1; overflow: hidden;">
+            
+            <!-- LEFT SIDEBAR: History -->
+            <aside style="width: 260px; background: rgba(0,0,0,0.4); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; padding: 20px;">
+                <button onclick="aiTutor.newChat()" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--primary); background: rgba(99, 102, 241, 0.1); color: white; cursor: pointer; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fa-solid fa-plus"></i> Nouveau Chat
+                </button>
+                
+                <h4 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 15px;">Historique</h4>
+                <div id="chat-history-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- History items injected here -->
+                </div>
+
+                <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+                    <button onclick="aiTutor.saveCurrentChat()" id="save-chat-btn" style="width: 100%; padding: 10px; border-radius: 8px; border: none; background: var(--glass); color: white; cursor: pointer; font-size: 0.8rem;">
+                        <i class="fa-solid fa-floppy-disk"></i> Sauvegarder ce chat
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Dashboard Area -->
+            <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column;">
+                <!-- Navbar -->
+                <nav style="padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 32px; height: 32px; background: var(--primary-gradient); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; font-size: 0.8rem;">B</div>
+                        <h3 style="font-weight: 800; letter-spacing: -0.5px; margin: 0; font-size: 1.1rem;">BAC IA <span style="color: var(--accent);">MAROC</span></h3>
+                    </div>
+                        <div style="text-align: right;">
+                            <span id="user-name" style="font-weight: 600; font-size: 0.9rem;">...</span>
+                        </div>
+                        <button id="theme-toggle" onclick="toggleTheme()" class="btn-ai-small" style="background: rgba(255,255,255,0.05); padding: 5px 12px; min-width: 45px;">
+                            <i id="theme-icon" class="fa-solid fa-moon"></i>
+                        </button>
+                        <button onclick="logout()" class="btn-ai-small" style="background: rgba(255,255,255,0.05); padding: 5px 10px;"><i class="fa-solid fa-power-off"></i></button>
+                    </div>
+                </nav>
+
+                <div class="bento-grid">
+            <!-- Left Col -->
+            <div style="grid-column: span 1; display: flex; flex-direction: column; gap: 20px;">
+                <div class="bento-item animate" style="padding: 0; height: 150px;">
+                    <img src="img/study_companion.png" alt="Study" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+                    <div style="position: absolute; bottom: 15px; left: 15px;">
+                        <div style="font-size: 1.1rem; font-weight: 800;">BAC 2025 🔥</div>
+                    </div>
+                </div>
+                <div class="bento-item animate" style="flex: 1;">
+                    <h3>Bibliothèque</h3>
+                    <div id="courses-library" style="max-height: 550px; overflow-y: auto;"></div>
+                </div>
+            </div>
+
+            <!-- Center Col (AI Assistant) -->
+            <div class="bento-item animate" style="grid-column: span 2; display: flex; flex-direction: column; min-height: 750px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 1.3rem; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        <i class="fa-solid fa-robot"></i> Assistant BAC IA
+                    </h2>
+                    <div id="profile-name" class="badge-premium">Chargement...</div>
+                </div>
+
+                <div id="ai-messages-main" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Messages will appear here -->
+                </div>
+
+                <div style="margin-top: 20px; position: relative;">
+                    <input type="text" id="ai-input-main" placeholder="Pose ta question ici..." 
+                           style="width: 100%; padding: 18px 60px 18px 25px; border-radius: 18px; border: 1px solid var(--glass-border); background: var(--card-bg); color: white; font-size: 0.95rem;">
+                    <button onclick="sendChatMessage()" style="position: absolute; right: 8px; top: 8px; width: 40px; height: 40px; border-radius: 12px; border: none; background: var(--primary-gradient); color: white; cursor: pointer;">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Col -->
+            <div style="grid-column: span 1; display: flex; flex-direction: column; gap: 20px;">
+                <div class="bento-item animate" style="text-align: center; padding: 15px;">
+                    <div id="days-count" style="font-size: 2.2rem; font-weight: 800; color: var(--secondary);">--</div>
+                    <div style="font-size: 0.6rem; letter-spacing: 2px;">JOURS RESTANTS</div>
+                </div>
+                <div class="bento-item animate" style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">Planning du Jour</h3>
+                        <button onclick="handleGeneratePlan()" class="btn-ai-small" style="padding: 2px 8px; font-size: 0.6rem;">Regénérer</button>
+                    </div>
+                    <div id="plan-list" style="display: grid; gap: 10px;">
+                        <!-- Tasks injected by JS -->
+                    </div>
+                </div>
+                <div class="bento-item animate">
+                    <h3>Diagnostic Précis</h3>
+                    <div id="axes-list" style="display: grid; gap: 12px; font-size: 0.8rem;">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+                <div class="bento-item animate">
+                    <h3>À revoir bientôt</h3>
+                    <div id="review-list" style="display: grid; gap: 10px; font-size: 0.8rem;">
+                        <div style="opacity: 0.5;">Tout est à jour ! 💪</div>
+                    </div>
+                </div>
+                <div class="bento-item animate">
+                    <h3>Aide Rapide</h3>
+                    <div id="prompts-list" style="display: grid; gap: 8px;"></div>
+                </div>
+                <div class="bento-item animate">
+                    <button onclick="window.print()" class="btn-ai-small" style="width: 100%; justify-content: center; background: var(--glass);">
+                        <i class="fa-solid fa-file-pdf"></i> Exporter Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            'Stressé 🔴': {
+                desc: "Ton stress te bloque pendant les examens. Tu as besoin de gagner en confiance par la répétition calme.",
+                strategy: "Priorise les simulations d'examen dans un environnement calme.",
+                prompts: ["Facilite-moi l'explication", "Rédige-moi 3 exercices (Progressif)", "Générer un Quiz (Interactif)"]
+            },
+            'Désorganisé 🟡': {
+                desc: "Tu travailles dur mais sans structure. Ton temps est précieux.",
+                strategy: "Utilise la méthode Pomodoro.",
+                prompts: ["Rédige-moi 3 exercices (Progressif)", "Générer un Quiz (Interactif)", "Donne-moi une checklist essentielle"]
+            },
+            'Passif 🟢': {
+                desc: "Tu relis beaucoup mais tu pratiques peu. C'est en faisant des erreurs qu'on apprend.",
+                strategy: "Arrête de relire. Passe aux exercices.",
+                prompts: ["Rédige-moi 3 exercices (Progressif)", "Générer un Quiz (Interactif)", "Donne-moi 5 exercices types"]
+            },
+            'Optimiseur 🟣': {
+                desc: "Tu as de bonnes bases. On vise l'excellence.",
+                strategy: "Analyse les barèmes officiels.",
+                prompts: ["Rédige-moi 3 exercices (Progressif)", "Générer un Quiz (Interactif)", "Pièges fréquents ?"]
+            },
+            'Perdu 🔵': {
+                desc: "Pas de panique, on va reprendre les bases.",
+                strategy: "Commence par les matières à gros coefficients.",
+                prompts: ["Facilite-moi l'explication", "Rédige-moi 3 exercices (Progressif)", "Générer un Quiz (Interactif)"]
+            }
+        };
+
+        async function init() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) { window.location.href = 'index.html'; return; }
+
+                const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
+                if (error || !profile) { window.location.href = 'index.html'; return; }
+
+                if (profile.status !== 'valide' && profile.role !== 'admin') { window.location.href = 'index.html'; return; }
+
+                this.currentLang = profile.lang || 'fr';
+                this.currentUser = session.user;
+                this.currentProfile = profile;
+                aiTutor.init(profile, this.currentLang);
+                updateUI(profile, this.currentLang);
+            } catch (err) {
+                console.error("Init Error:", err);
+            }
+        }
+
+        function updateUI(profile, lang) {
+            document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.body.style.textAlign = lang === 'ar' ? 'right' : 'left';
+            
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+
+            document.getElementById('user-name').innerText = profile.firstname;
+            const profileName = profile.assigned_profile || 'Perdu 🔵';
+            const data = content[profileName] || content['Perdu 🔵'];
+
+            document.getElementById('profile-name').innerText = profileName;
+
+            // Prompts
+            const promptsDiv = document.getElementById('prompts-list');
+            promptsDiv.innerHTML = '';
+            data.prompts.forEach(p => {
+                const box = document.createElement('div');
+                box.className = 'prompt-box';
+                box.innerHTML = `${p} <i class="fa-solid fa-copy" style="float: right; opacity: 0.3;"></i>`;
+                box.onclick = () => {
+                    if (p.includes("Quiz")) aiTutor.startQuizFlow();
+                    else aiTutor.askQuickPrompt(p);
+                };
+                promptsDiv.appendChild(box);
+            });
+
+            // Axes
+            const axesDiv = document.getElementById('axes-list');
+            const scores = profile.quiz_scores || { clarity: 50, action: 50, organization: 50, stress: 50, optimization: 50 };
+            const labels = {
+                clarity: 'Clarté du but',
+                action: 'Niveau d\'action',
+                organization: 'Organisation',
+                stress: 'Gestion Stress',
+                optimization: 'Optimisation'
+            };
+            
+            axesDiv.innerHTML = '';
+            Object.entries(scores).forEach(([key, val]) => {
+                const color = key === 'stress' ? (val > 60 ? '#ef4444' : '#10b981') : 'var(--primary)';
+                axesDiv.innerHTML += `
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span>${labels[key] || key}</span>
+                            <span style="font-weight:bold;">${val}%</span>
+                        </div>
+                        <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:3px;">
+                            <div style="width:${val}%; height:100%; background:${color}; border-radius:3px; box-shadow: 0 0 10px ${color}44;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Vidéos section removed
+
+            // Courses
+            const coursesDiv = document.getElementById('courses-library');
+            coursesDiv.innerHTML = '';
+            for (const [subject, lessons] of Object.entries(COURSES_DATA)) {
+                const group = document.createElement('div');
+                group.style.marginBottom = "20px";
+                group.innerHTML = `<h4 style="color: var(--primary); margin-bottom: 8px; font-size: 0.75rem; text-transform: uppercase;">${subject}</h4>`;
+                lessons.forEach(lesson => {
+                    const item = document.createElement('div');
+                    item.className = 'plan-day';
+                    item.style.padding = '10px';
+                    item.style.justifyContent = 'space-between';
+                    const title = lang === 'ar' ? (lesson.title_ar || lesson.title) : lesson.title;
+                    item.innerHTML = `
+                        <div style="flex:1">
+                            <div style="font-weight: 600; font-size: 0.85rem;">${title}</div>
+                        </div>
+                        <button onclick="aiTutor.askAboutCourse('${lesson.title}', '${subject}')" class="btn-ai-small" style="padding: 5px 8px;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    `;
+                    group.appendChild(item);
+                });
+                coursesDiv.appendChild(group);
+            }
+
+            loadReviewList();
+            loadPlanning(profile.id);
+        }
+
+        async function loadPlanning(userId) {
+            await revisionPlanner.init();
+            const daysEl = document.getElementById('days-count');
+            const targetDate = revisionPlanner.getTargetExamDate(this.currentProfile);
+            const diff = Math.ceil((new Date(targetDate) - new Date()) / (1000 * 60 * 60 * 24));
+            daysEl.innerText = diff > 0 ? diff : 0;
+
+            const tasks = await revisionPlanner.loadTodayTasks(userId);
+            const planDiv = document.getElementById('plan-list');
+            
+            if (tasks.length === 0) {
+                planDiv.innerHTML = `<div style="text-align:center; padding:20px; opacity:0.5;">Aucune tâche aujourd'hui.</div>`;
+                return;
+            }
+
+            planDiv.innerHTML = tasks.map(t => `
+                <div class="plan-day" style="padding: 10px; border-left: 3px solid var(--primary);">
+                    <div style="flex:1">
+                        <div style="font-weight:700; font-size:0.85rem;">${t.title}</div>
+                        <div style="font-size:0.7rem; opacity:0.7;">${t.subject} — ${t.task_type}</div>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="aiTutor.startPlanningTask(${JSON.stringify(t).replace(/"/g, '&quot;')})" class="btn-ai-small" style="padding:4px 8px;">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button onclick="handleMarkDone('${t.id}')" class="btn-ai-small" style="padding:4px 8px; background:rgba(16, 185, 129, 0.1); color:#10b981;">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleGeneratePlan() {
+            if (!confirm("Voulez-vous générer un nouveau planning ? Cela archivera l'ancien.")) return;
+            const res = await revisionPlanner.generateRevisionPlan(this.currentProfile);
+            if (res) {
+                await revisionPlanner.saveRevisionPlan(this.currentUser.id, res);
+                loadPlanning(this.currentUser.id);
+            }
+        }
+
+        async function handleMarkDone(taskId) {
+            await revisionPlanner.markTaskDone(taskId);
+            loadPlanning(auth.user.id);
+        }
+
+        async function loadReviewList() {
+            const container = document.getElementById('review-list');
+            if (!container) return;
+
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) return;
+                
+                const { data: weakNotions } = await supabaseClient
+                    .from('student_mastery')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .or('mastery_score.lt.0.6,next_review_at.lte.now()')
+                    .limit(3)
+                    .order('next_review_at', { ascending: true });
+
+                if (weakNotions && weakNotions.length > 0) {
+                    container.innerHTML = weakNotions.map(n => `
+                        <div class="plan-day" style="padding: 8px 12px; margin: 0; background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2);">
+                            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 700; color: var(--primary);">${n.skill}</div>
+                                    <div style="font-size: 0.65rem; opacity: 0.7;">${n.subject} — ${n.chapter}</div>
+                                </div>
+                                <div style="font-weight: 800; color: #ef4444;">${Math.round(n.mastery_score * 100)}%</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Review Load Error:", err);
+            }
+        }
+
+
+        function logout() { supabaseClient.auth.signOut().then(() => window.location.href = 'index.html'); }
+
+        function sendChatMessage() {
+            const input = document.getElementById('ai-input-main');
+            const text = input.value.trim();
+            if (text) {
+                aiTutor.sendMessageFromMain(text);
+                input.value = '';
+            }
+        }
+
+        function applyTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = savedTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            localStorage.setItem('theme', target);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = target === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        }
+
+        applyTheme();
+
+        document.getElementById('ai-input-main')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+        init();
+    </script>
+</body>
+</html>

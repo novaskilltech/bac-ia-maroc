@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration — BAC IA MAROC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+        th { color: var(--primary); }
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+        .status-en_attente { background: #ffd700; color: #000; }
+        .status-valide { background: #25D366; color: #fff; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js?v=3"></script>
+</head>
+<body style="background: #050610;">
+    <div class="container" style="padding: 40px 0;">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <h1>Dashboard Admin</h1>
+            <button onclick="logoutAdmin()" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.9rem;">Déconnexion</button>
+        </header>
+
+        <div id="login-section" class="glass" style="max-width: 400px; margin: 0 auto; padding: 30px;">
+            <h3>Connexion Admin</h3>
+            <div class="form-group" style="margin-top: 20px;">
+                <input type="email" id="admin-email" placeholder="Email Admin">
+            </div>
+            <div class="form-group">
+                <input type="password" id="admin-pass" placeholder="Mot de passe">
+            </div>
+            <button onclick="loginAdmin()" class="btn btn-primary" style="width: 100%;">Se connecter</button>
+        </div>
+
+        <div id="admin-content" style="display: none;">
+            <!-- Analytics Cards -->
+            <div class="grid" style="margin-bottom: 30px;">
+                <div class="glass" style="padding: 20px; text-align: center;">
+                    <h4 style="color: var(--text-dim);">Total Élèves</h4>
+                    <h2 id="stat-total" style="font-size: 2.5rem; margin: 10px 0;">0</h2>
+                </div>
+                <div class="glass" style="padding: 20px; text-align: center;">
+                    <h4 style="color: var(--text-dim);">Revenu Estimé</h4>
+                    <h2 id="stat-revenue" style="font-size: 2.5rem; margin: 10px 0; color: #25D366;">0 DH</h2>
+                    <p id="stat-valide-count" style="font-size: 0.8rem; color: var(--text-dim);">0 validés</p>
+                </div>
+                <div class="glass" style="padding: 20px;">
+                    <h4 style="color: var(--text-dim); margin-bottom: 15px;">Répartition des Profils</h4>
+                    <div id="profile-stats" style="font-size: 0.85rem; display: grid; gap: 5px;">
+                        <!-- Injected -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass" style="padding: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>Gestion des Élèves</h3>
+                    <input type="text" id="search-user" placeholder="Rechercher par email ou nom..." style="padding: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1b2e; color: white; width: 300px;" oninput="filterUsers()">
+                </div>
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>Élève</th>
+                        <th>WhatsApp</th>
+                        <th>Profil</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <!-- Injected by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentSession = null;
+
+        async function checkSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            currentSession = session;
+            
+            if (session) {
+                // Verify if this user has admin role in the database
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profile && profile.role === 'admin') {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    loadUsers();
+                } else {
+                    alert("Accès refusé. Vous n'avez pas les droits d'administration.");
+                    await supabaseClient.auth.signOut();
+                    window.location.reload();
+                }
+            } else {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('admin-content').style.display = 'none';
+            }
+        }
+
+        async function loginAdmin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-pass').value;
+            
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert('Erreur: ' + error.message);
+            } else {
+                checkSession();
+            }
+        }
+
+        async function logoutAdmin() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        let allUsers = [];
+
+        async function loadUsers() {
+            const { data: users, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                const tbody = document.getElementById('users-tbody');
+                tbody.innerHTML = `<tr><td colspan="5">Erreur: ${error.message}</td></tr>`;
+                return;
+            }
+
+            allUsers = users;
+            updateAnalytics(allUsers);
+            renderUsers(allUsers);
+        }
+
+        function updateAnalytics(users) {
+            const total = users.length;
+            const valides = users.filter(u => u.status === 'valide').length;
+            const revenue = valides * 199;
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-revenue').innerText = `${revenue} DH`;
+            document.getElementById('stat-valide-count').innerText = `${valides} paiements validés`;
+
+            // Profile distribution
+            const profiles = {};
+            users.forEach(u => {
+                if (u.assigned_profile) {
+                    profiles[u.assigned_profile] = (profiles[u.assigned_profile] || 0) + 1;
+                }
+            });
+
+            const profileDiv = document.getElementById('profile-stats');
+            profileDiv.innerHTML = '';
+            for (const [name, count] of Object.entries(profiles)) {
+                const percentage = Math.round((count / total) * 100);
+                profileDiv.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>${name}</span>
+                        <span style="color: var(--primary); font-weight: bold;">${count} (${percentage}%)</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: #333; border-radius: 2px; margin-bottom: 8px;">
+                        <div style="width: ${percentage}%; height: 100%; background: var(--primary); border-radius: 2px;"></div>
+                    </div>
+                `;
+            }
+            if (Object.keys(profiles).length === 0) {
+                profileDiv.innerHTML = '<p style="color: var(--text-dim);">Aucun diagnostic terminé.</p>';
+            }
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('search-user').value.toLowerCase();
+            const filtered = allUsers.filter(user => 
+                (user.firstname && user.firstname.toLowerCase().includes(searchTerm)) ||
+                (user.email && user.email.toLowerCase().includes(searchTerm)) ||
+                (user.whatsapp && user.whatsapp.includes(searchTerm))
+            );
+            renderUsers(filtered);
+        }
+
+        function renderUsers(usersList) {
+            const tbody = document.getElementById('users-tbody');
+            tbody.innerHTML = '';
+
+            if (usersList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Aucun élève trouvé.</td></tr>';
+                return;
+            }
+
+            usersList.forEach(user => {
+                const tr = document.createElement('tr');
+                const profileStr = user.assigned_profile || 'N/A';
+                tr.innerHTML = `
+                    <td>${user.firstname || 'Anonyme'} <br><small style="color: gray;">${user.email}</small></td>
+                    <td>${user.whatsapp || '---'}</td>
+                    <td>${profileStr}</td>
+                    <td><span class="status status-${user.status}">${user.status}</span></td>
+                    <td>
+                        ${user.status === 'en_attente' ? 
+                          `<button onclick="validateUser('${user.id}')" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.8rem;">Valider</button>` : 
+                          `<button onclick="revokeUser('${user.id}')" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem;">Révoquer</button>`}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function validateUser(id) {
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ status: 'valide', payment_status: 'paiement_valide' })
+                .eq('id', id);
+
+            if (error) {
+                alert('Erreur: ' + error.message);
+            } else {
+                loadUsers();
+            }
+        }
+
+        async function revokeUser(id) {
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ status: 'en_attente', payment_status: 'non_paye' })
+                .eq('id', id);
+
+            if (error) {
+                alert('Erreur: ' + error.message);
+            } else {
+                loadUsers();
+            }
+        }
+
+        window.onload = checkSession;
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAC IA MAROC — Diagnostic & Révision Intelligente</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="description" content="Un système de révision intelligent pour les élèves du Bac Sciences au Maroc. Diagnostic personnalisé et plan de révision IA.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Landing Page Content -->
+    <section id="landing" class="hero">
+        <div class="container hero-wrapper">
+            <div class="hero-content">
+                <h1 class="animate" style="animation-delay: 0.1s;">Un élève qui gagne 1 point change son avenir.</h1>
+                <p class="animate" style="animation-delay: 0.2s;">
+                    Découvre ton profil d'apprentissage, corrige ta méthode et booste tes notes au Bac Sciences avec notre diagnostic intelligent.
+                </p>
+                <div class="cta-group animate" style="animation-delay: 0.3s;">
+                    <a href="#" class="btn btn-primary" id="start-btn">Créer mon compte</a>
+                    <a href="#features" class="btn btn-secondary">En savoir plus</a>
+                </div>
+                <p class="price-tag animate" style="animation-delay: 0.4s; margin-top: 20px; font-weight: 600; color: var(--secondary);">
+                    Diagnostic Complet + Accès App : 199 DH seulement
+                </p>
+            </div>
+            <div class="hero-image animate" style="animation-delay: 0.5s;">
+                <img src="assets/bac_ia_maroc_hero.png" alt="Étudiant BAC IA" style="width: 100%; border-radius: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid var(--glass-border);">
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="grid">
+                <div class="card glass animate">
+                    <i class="fa-solid fa-brain"></i>
+                    <h3>Diagnostic IA</h3>
+                    <p>Analyse précise de ton niveau, de ton stress et de ton organisation pour un plan sur mesure.</p>
+                </div>
+                <div class="card glass animate">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <h3>Plan de 30 Jours</h3>
+                    <p>Un planning quotidien structuré pour ne plus jamais te sentir perdu devant tes cahiers.</p>
+                </div>
+                <div class="card glass animate">
+                    <i class="fa-solid fa-magic-wand-sparkles"></i>
+                    <h3>Prompts IA Optimisés</h3>
+                    <p>Utilise ChatGPT comme un pro avec des instructions conçues pour la réussite au Bac Marocain.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="modal glass animate">
+            <h2 id="modal-title" style="margin-bottom: 25px; text-align: center;">Créer ton compte</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="firstname">Prénom</label>
+                    <input type="text" id="firstname" required placeholder="Ex: Omar">
+                </div>
+                <div class="form-group">
+                    <label for="whatsapp">Numéro WhatsApp</label>
+                    <input type="tel" id="whatsapp" required placeholder="06XXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email ou Identifiant</label>
+                    <input type="text" id="email" required placeholder="votre@email.com">
+                </div>
+                <div class="form-group" id="password-group" style="display: none;">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label for="grade_level">Niveau scolaire</label>
+                    <select id="grade_level">
+                        <option value="2bac">2ème Année Bac</option>
+                        <option value="1bac">1ère Année Bac</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="track">Filière et Section</label>
+                    <select id="track" style="font-size: 0.85rem;">
+                        <optgroup label="Sciences Expérimentales">
+                            <option value="PC_BIOF">Sciences Physiques (PC) - BIOF</option>
+                            <option value="PC_AR">Sciences Physiques (PC) - Arabe</option>
+                            <option value="SVT_BIOF">SVT - BIOF</option>
+                            <option value="SVT_AR">SVT - Arabe</option>
+                            <option value="Agro">Sciences Agronomiques</option>
+                        </optgroup>
+                        <optgroup label="Sciences Mathématiques">
+                            <option value="SMA_BIOF">Sc. Math A - BIOF</option>
+                            <option value="SMA_AR">Sc. Math A - Arabe</option>
+                            <option value="SMB_BIOF">Sc. Math B - BIOF</option>
+                            <option value="SMB_AR">Sc. Math B - Arabe</option>
+                        </optgroup>
+                        <optgroup label="Sciences Éco & Gestion">
+                            <option value="Eco">Sciences Économiques</option>
+                            <option value="SGC">Comptabilité (SGC)</option>
+                        </optgroup>
+                        <optgroup label="Technique & Arts">
+                            <option value="STE">Sc. Tech Électriques (STE)</option>
+                            <option value="STM">Sc. Tech Mécaniques (STM)</option>
+                            <option value="Arts">Arts Appliqués</option>
+                        </optgroup>
+                        <optgroup label="Lettres & Humaines">
+                            <option value="Lettres">Lettres</option>
+                            <option value="Humaines">Sciences Humaines</option>
+                        </optgroup>
+                        <optgroup label="Bac Professionnel">
+                            <option value="Pro_Industriel">Bac Pro - Industriel</option>
+                            <option value="Pro_Service">Bac Pro - Services</option>
+                            <option value="Pro_Agro">Bac Pro - Agricole</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="lang">Langue de l'Assistant</label>
+                    <select id="lang">
+                        <option value="fr">Français</option>
+                        <option value="ar">العربية</option>
+                        <option value="darija">الدارجة المغربية</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Suivant</button>
+                
+                <div style="text-align: center; margin: 15px 0; color: var(--text-dim); font-size: 0.9rem;">
+                    — Ou —
+                </div>
+                
+                <button type="button" id="google-auth-btn" class="btn btn-secondary" style="width: 100%; background: white; color: #333; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-brands fa-google" style="color: #DB4437; margin-right: 8px;"></i> Continuer avec Google
+                </button>
+            </form>
+            <p id="auth-switch" style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-dim); cursor: pointer;">
+                Déjà inscrit ? Connecte-toi ici.
+            </p>
+        </div>
+    </div>
+
+    <!-- Questionnaire Section (Hidden by default) -->
+    <section id="questionnaire" class="features" style="display: none;">
+        <div class="container">
+            <div class="glass animate" style="max-width: 800px; margin: 0 auto; padding: 40px;">
+                <div id="quiz-header" style="text-align: center; margin-bottom: 30px;">
+                    <h2 id="quiz-title">Ton Diagnostic</h2>
+                    <p id="quiz-progress" style="color: var(--text-dim);">Étape 1 sur 5</p>
+                    <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 15px;">
+                        <div id="progress-bar" style="width: 20%; height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                <form id="quiz-form">
+                    <div id="quiz-step-content">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                        <button type="button" id="prev-step" class="btn btn-secondary" style="display: none;">Précédent</button>
+                        <button type="button" id="next-step" class="btn btn-primary">Suivant</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Section (Hidden by default) -->
+    <section id="payment" class="features" style="display: none;">
+        <div class="container" style="text-align: center;">
+            <div class="glass animate" style="max-width: 600px; margin: 0 auto; padding: 40px;">
+                <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--secondary); margin-bottom: 20px;"></i>
+                <h2>Dernière étape !</h2>
+                <p style="margin-bottom: 30px;">Pour débloquer ton diagnostic personnalisé et ton plan de 30 jours, effectue ton paiement de 199 DH.</p>
+                
+                <div style="text-align: left; background: rgba(0,0,0,0.2); padding: 25px; border-radius: 16px; margin-bottom: 30px;">
+                    <h4 style="margin-bottom: 15px; color: var(--secondary);">Instructions de paiement :</h4>
+                    <p style="font-size: 0.95rem; margin-bottom: 10px;">1. Envoie <strong>199 DH</strong> via <strong>CashPlus</strong> ou <strong>WafaCash</strong>.</p>
+                    <p style="font-size: 0.95rem; margin-bottom: 10px;">2. Nom du destinataire : <strong>M. LAMKHANNET SALAH EDINE AHMED</strong></p>
+                    <p style="font-size: 0.95rem; margin-bottom: 15px;">3. Prends une photo du reçu.</p>
+                    <a href="https://wa.me/212716014148?text=Bonjour, voici ma preuve de paiement pour BAC IA MAROC" target="_blank" class="btn btn-primary" style="width: 100%; text-align: center; background: #25D366; border: none;">
+                        <i class="fa-brands fa-whatsapp"></i> Envoyer la preuve
+                    </a>
+                </div>
+                
+                <p style="font-size: 0.85rem; color: var(--text-dim);">
+                    Ton compte sera validé manuellement par un administrateur dans un délai de 1 à 6 heures après réception de la preuve.
+                </p>
+                <div style="margin-top: 30px; padding: 15px; border-top: 1px solid var(--glass-border);">
+                    <p>Statut actuel : <span id="payment-status" style="color: var(--secondary); font-weight: 700;">En attente de paiement</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Theme Toggle Floating Button -->
+    <button id="theme-toggle" onclick="toggleTheme()" class="btn-ai-small" style="position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js?v=3"></script>
+    <script src="js/main.js?v=3"></script>
+    <script src="js/auth.js?v=3"></script>
+    <script src="js/questionnaire.js?v=3"></script>
+    <script>
+        function applyTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = savedTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            localStorage.setItem('theme', target);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = target === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        }
+
+        applyTheme();
+    </script>
+</body>
+</html>
