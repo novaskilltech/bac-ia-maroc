@@ -37,29 +37,59 @@ const aiTutor = {
         // 2. Construire le prompt avec la mémoire
         const systemPrompt = this.buildDynamicPrompt(user, langName, memoryText);
 
-        // APPEL SÉCURISÉ VIA SUPABASE EDGE FUNCTION
-        const { data, error } = await supabaseClient.functions.invoke('gemini-proxy', {
-            body: { prompt, systemPrompt }
-        });
+        // On récupère la clé depuis le localStorage pour éviter de la mettre en dur dans le code (Sécurité Git)
+        let OPENROUTER_API_KEY = localStorage.getItem('OPENROUTER_KEY');
 
-        if (error) throw new Error("Erreur de communication avec le serveur IA.");
-        
-        const rawResponse = data.candidates[0].content.parts[0].text;
-
-        // 3. Extraire et traiter le signal pédagogique invisible
-        const signal = this.extractLearningSignal(rawResponse);
-        if (signal) {
-            this.saveLearningSignal(user.id, signal);
+        // Si la clé n'est pas configurée, on utilise une clé de secours ou on affiche un message
+        if (!OPENROUTER_API_KEY) {
+            console.error("Clé API OpenRouter manquante. Veuillez la configurer avec localStorage.setItem('OPENROUTER_KEY', 'votre_cle')");
+            throw new Error("Clé AI non configurée.");
         }
 
-        // 4. Nettoyer la réponse pour l'élève
-        const cleanResponse = this.cleanAIResponse(rawResponse);
-        
-        // Add to history state
-        this.currentMessages.push({ role: 'user', content: prompt });
-        this.currentMessages.push({ role: 'ai', content: cleanResponse });
+        try {
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                    "HTTP-Referer": window.location.origin,
+                    "X-Title": "BAC IA MAROC",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "model": "google/gemini-flash-1.5",
+                    "messages": [
+                        { "role": "system", "content": systemPrompt },
+                        { "role": "user", "content": prompt }
+                    ],
+                })
+            });
 
-        return cleanResponse;
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error?.message || "Erreur API");
+            }
+
+            const data = await response.json();
+            const rawResponse = data.choices[0].message.content;
+
+            // 3. Extraire et traiter le signal pédagogique invisible
+            const signal = this.extractLearningSignal(rawResponse);
+            if (signal) {
+                this.saveLearningSignal(user.id, signal);
+            }
+
+            // 4. Nettoyer la réponse pour l'élève
+            const cleanResponse = this.cleanAIResponse(rawResponse);
+            
+            // Add to history state
+            this.currentMessages.push({ role: 'user', content: prompt });
+            this.currentMessages.push({ role: 'assistant', content: cleanResponse });
+
+            return cleanResponse;
+        } catch (error) {
+            console.error("AI Error:", error);
+            throw error;
+        }
     },
 
     async loadLearningMemory(userId, subject, chapter) {
