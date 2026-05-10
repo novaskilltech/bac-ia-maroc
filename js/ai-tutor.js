@@ -38,39 +38,37 @@ const aiTutor = {
         const systemPrompt = this.buildDynamicPrompt(user, langName, memoryText);
 
         // On récupère la clé depuis le localStorage pour éviter de la mettre en dur dans le code (Sécurité Git)
-        let OPENROUTER_API_KEY = localStorage.getItem('OPENROUTER_KEY');
+        let GEMINI_API_KEY = localStorage.getItem('GEMINI_API_KEY');
 
-        // Si la clé n'est pas configurée, on utilise une clé de secours ou on affiche un message
-        if (!OPENROUTER_API_KEY) {
-            console.error("Clé API OpenRouter manquante. Veuillez la configurer avec localStorage.setItem('OPENROUTER_KEY', 'votre_cle')");
+        if (!GEMINI_API_KEY) {
+            console.error("Clé API Gemini manquante. Configurez-la avec : localStorage.setItem('GEMINI_API_KEY', 'votre_cle')");
             throw new Error("Clé AI non configurée.");
         }
 
         try {
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                    "HTTP-Referer": window.location.origin,
-                    "X-Title": "BAC IA MAROC",
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "model": "google/gemini-flash-1.5",
-                    "messages": [
-                        { "role": "system", "content": systemPrompt },
-                        { "role": "user", "content": prompt }
+                    "contents": [
+                        { "role": "user", "parts": [{ "text": `${systemPrompt}\n\nQUESTION DE L'ÉLÈVE : ${prompt}` }] }
                     ],
+                    "generationConfig": {
+                        "temperature": 0.7,
+                        "maxOutputTokens": 2048
+                    }
                 })
             });
 
             if (!response.ok) {
                 const errData = await response.json();
-                throw new Error(errData.error?.message || "Erreur API");
+                throw new Error(errData.error?.message || "Erreur API Gemini");
             }
 
             const data = await response.json();
-            const rawResponse = data.choices[0].message.content;
+            const rawResponse = data.candidates[0].content.parts[0].text;
 
             // 3. Extraire et traiter le signal pédagogique invisible
             const signal = this.extractLearningSignal(rawResponse);
