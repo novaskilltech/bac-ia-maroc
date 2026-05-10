@@ -29,7 +29,7 @@ const aiTutor = {
             'darija': 'Darija Marocaine (en caractères arabes ou latins selon la demande)'
         };
         const langName = langMap[this.currentLang] || 'Français';
-        
+
         // 1. Charger la mémoire pédagogique (erreurs + maîtrise)
         const memory = await this.loadLearningMemory(user.id, this.currentSubject, this.currentCourse);
         const memoryText = this.formatLearningMemoryForPrompt(memory);
@@ -78,7 +78,7 @@ const aiTutor = {
 
             // 4. Nettoyer la réponse pour l'élève
             const cleanResponse = this.cleanAIResponse(rawResponse);
-            
+
             // Add to history state
             this.currentMessages.push({ role: 'user', content: prompt });
             this.currentMessages.push({ role: 'assistant', content: cleanResponse });
@@ -182,7 +182,7 @@ const aiTutor = {
                         .single();
 
                     const newScore = Math.min(1, Math.max(0, (current?.mastery_score || 0.5) + (u.delta || 0)));
-                    
+
                     await supabaseClient.from('student_mastery').upsert({
                         user_id: userId,
                         skill: u.skill,
@@ -220,7 +220,7 @@ const aiTutor = {
             'darija': 'Réponds en Darija Marocaine EN CARACTÈRES ARABES UNIQUEMENT (pas de lettres latines/arabizi). Sois proche de l\'élève, utilise un ton amical et pédagogique.'
         };
 
-        const curriculumCtx = isBIOF 
+        const curriculumCtx = isBIOF
             ? "L'élève suit le programme BIOF (Bac International - Option Français). Les termes scientifiques sont en Français."
             : "L'élève suit le programme ARABE. Les termes scientifiques et les examens sont en Arabe.";
 
@@ -327,10 +327,10 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les maths. Ne
             if (window.renderMathInElement) {
                 renderMathInElement(div, {
                     delimiters: [
-                        {left: '$$', right: '$$', display: true},
-                        {left: '$', right: '$', display: false},
-                        {left: '\\(', right: '\\)', display: false},
-                        {left: '\\[', right: '\\]', display: true}
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
                     ],
                     throwOnError: false
                 });
@@ -478,7 +478,7 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les maths. Ne
         container.className = 'bento-item animate';
         container.style.marginTop = "15px";
         container.style.border = "1px solid var(--primary)";
-        
+
         window.currentQuiz = { data: quizData, score: 0, currentIdx: 0, id: quizId };
         this.nextQuizQuestion(quizId, 0);
         document.getElementById('ai-messages-main').appendChild(container);
@@ -512,8 +512,8 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les maths. Ne
                 ${isCorrect ? 'Correct !' : 'Incorrect.'}
             </div>
             <p style="font-size:0.8rem; margin-bottom:15px;">${q.explanation}</p>
-            ${qIdx < quiz.data.length - 1 
-                ? `<button onclick="aiTutor.nextQuizQuestion('${quizId}', ${qIdx+1})" class="btn-ai-small" style="width:100%">Question Suivante</button>`
+            ${qIdx < quiz.data.length - 1
+                ? `<button onclick="aiTutor.nextQuizQuestion('${quizId}', ${qIdx + 1})" class="btn-ai-small" style="width:100%">Question Suivante</button>`
                 : `<div style="text-align:center; font-weight:800; font-size:1.2rem;">Score : ${quiz.score}/${quiz.data.length}</div>`
             }
         `;
