@@ -7,10 +7,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isLogin = false;
 
-    // Toggle Modal
-    startBtn.addEventListener('click', (e) => {
-        e.preventDefault();
+    function openModalMode(loginMode = false) {
         authModal.style.display = 'flex';
+        if (loginMode !== isLogin) {
+            authSwitch.click();
+        }
+    }
+
+    // Toggle Modal on main start-btn and all .open-auth-btn CTAs
+    if (startBtn) {
+        startBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModalMode(false);
+        });
+    }
+
+    document.querySelectorAll('.open-auth-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModalMode(false);
+        });
+    });
+
+    document.querySelectorAll('.open-login-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModalMode(true);
+        });
     });
 
     authModal.addEventListener('click', (e) => {
@@ -29,25 +52,27 @@ document.addEventListener('DOMContentLoaded', () => {
             // Hide signup-only fields
             document.getElementById('firstname').parentElement.style.display = 'none';
             document.getElementById('whatsapp').parentElement.style.display = 'none';
+            document.getElementById('grade_level').parentElement.style.display = 'none';
+            document.getElementById('track').parentElement.style.display = 'none';
             document.getElementById('lang').parentElement.style.display = 'none';
             document.getElementById('firstname').removeAttribute('required');
             document.getElementById('whatsapp').removeAttribute('required');
-            // Show password for login
             document.getElementById('password-group').style.display = 'block';
             document.getElementById('password').setAttribute('required', 'required');
         } else {
             modalTitle.innerText = 'Créer ton compte';
-            authForm.querySelector('button').innerText = 'Suivant';
+            authForm.querySelector('button').innerText = 'Créer mon compte';
             authSwitch.innerText = 'Déjà inscrit ? Connecte-toi ici.';
             // Show signup-only fields
             document.getElementById('firstname').parentElement.style.display = 'block';
             document.getElementById('whatsapp').parentElement.style.display = 'block';
+            document.getElementById('grade_level').parentElement.style.display = 'block';
+            document.getElementById('track').parentElement.style.display = 'block';
             document.getElementById('lang').parentElement.style.display = 'block';
             document.getElementById('firstname').setAttribute('required', 'required');
             document.getElementById('whatsapp').setAttribute('required', 'required');
-            // Hide password for signup
-            document.getElementById('password-group').style.display = 'none';
-            document.getElementById('password').removeAttribute('required');
+            document.getElementById('password-group').style.display = 'block';
+            document.getElementById('password').setAttribute('required', 'required');
         }
     });
 

@@ -1,71 +1,424 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAC IA MAROC — Diagnostic & Révision Intelligente</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <meta name="description" content="Un système de révision intelligent pour les élèves du Bac Sciences au Maroc. Diagnostic personnalisé et plan de révision IA.">
+    <title>NOVA BAC IA — Ton Coach IA 24h/24 pour Réussir le Bac au Maroc</title>
+    <link rel="icon" type="image/svg+xml" href="assets/logo-nova-bac-ia.svg">
+    <meta name="description" content="Ne rate pas ton Bac pour 1 point. Le premier Coach IA 24h/24 au Maroc qui s'adapte à TON cerveau dans toutes les matières pour seulement 199 DH/an (moins de 1 DH par jour).">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=12">
 </head>
 <body>
 
-    <!-- Landing Page Content -->
-    <section id="landing" class="hero">
+    <!-- Bandeau d'urgence supérieur -->
+    <div class="urgency-banner">
+        <span data-i18n="urgency_top">
+            ⚠️ <strong>Chaque année au Maroc, des milliers d'élèves ratent le Bac ou le seuil de leur école de rêve à 0,25 ou 1 point près.</strong> Ne laisse pas ce point t'échapper : <strong>199 DH pour toute l'année (moins de 1 DH / jour) !</strong>
+        </span>
+    </div>
+
+    <!-- Top Brand Header + Language Switcher (Français / Darija) -->
+    <header class="lp-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="assets/logo-nova-bac-ia.svg" alt="NOVA BAC IA" style="width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);">
+            <div>
+                <span style="font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px;">NOVA BAC <span style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">IA</span></span>
+                <div style="font-size: 0.68rem; color: var(--text-dim); font-weight: 600;" data-i18n="brand_sub">COACH BAC MAROC 24H/24 • TOUTES MATIÈRES</div>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Switch Français / Darija Marocaine -->
+            <div class="lang-switch-bar" role="group" aria-label="Choisir la langue">
+                <button type="button" id="btn-lang-fr" class="lang-switch-btn active" onclick="setLandingLang('fr')">
+                    🇫🇷 Français
+                </button>
+                <button type="button" id="btn-lang-darija" class="lang-switch-btn" onclick="setLandingLang('darija')">
+                    🇲🇦 الدارجة المغربية
+                </button>
+            </div>
+
+            <button type="button" onclick="toggleTheme()" class="btn btn-secondary" style="padding: 10px 14px; font-size: 0.9rem;" title="Mode Clair / Mode Sombre">
+                <i id="header-theme-icon" class="fa-solid fa-moon"></i>
+            </button>
+
+            <button type="button" class="btn btn-secondary open-login-btn" style="padding: 10px 18px; font-size: 0.85rem;" data-i18n="nav_login">
+                Se connecter
+            </button>
+            <button type="button" class="btn btn-primary open-auth-btn" style="padding: 10px 20px; font-size: 0.85rem;" data-i18n="nav_cta">
+                Faire mon Diagnostic
+            </button>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         SECTION 1 : HERO — L'URGENCE DU POINT QUI CHANGE TOUTE UNE VIE
+         ===================================================================== -->
+    <section id="landing" class="hero" style="padding-top: 50px; padding-bottom: 60px;">
         <div class="container hero-wrapper">
             <div class="hero-content">
-                <h1 class="animate" style="animation-delay: 0.1s;">Un élève qui gagne 1 point change son avenir.</h1>
-                <p class="animate" style="animation-delay: 0.2s;">
-                    Découvre ton profil d'apprentissage, corrige ta méthode et booste tes notes au Bac Sciences avec notre diagnostic intelligent.
-                </p>
-                <div class="cta-group animate" style="animation-delay: 0.3s;">
-                    <a href="#" class="btn btn-primary" id="start-btn">Créer mon compte</a>
-                    <a href="#features" class="btn btn-secondary">En savoir plus</a>
+                <div class="lp-eyebrow animate" data-i18n="hero_badge">
+                    🔥 LE 1er COACH IA SUR-MESURE POUR LE BAC AU MAROC
                 </div>
-                <p class="price-tag animate" style="animation-delay: 0.4s; margin-top: 20px; font-weight: 600; color: var(--secondary);">
-                    Diagnostic Complet + Accès App : 199 DH seulement
+                <h1 class="animate" style="animation-delay: 0.1s; font-size: clamp(2.1rem, 4.2vw, 3.3rem); line-height: 1.15;" data-i18n="hero_title">
+                    Il manque parfois <span style="color: var(--primary);">1 seul point</span> pour avoir le Bac. Ne laisse pas ton avenir se jouer à un détail.
+                </h1>
+                <p class="animate" style="animation-delay: 0.2s; font-size: 1.12rem; line-height: 1.7; margin-top: 18px;" data-i18n="hero_desc">
+                    Tout le monde n'a pas les moyens de payer <strong>2 000 DH par mois</strong> en cours particuliers pour chaque matière. Avec <strong>NOVA BAC IA</strong>, tu as ton propre professeur particulier d'élite <strong>disponible 24h/24 et 7j/7 dans TOUTES les matières</strong>, calibré exactement sur la façon dont <strong>TON cerveau</strong> comprend les cours.
+                </p>
+
+                <!-- Points clés rapides -->
+                <div class="animate" style="animation-delay: 0.25s; display: grid; gap: 10px; margin: 22px 0; font-size: 0.95rem;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                        <span data-i18n="hero_b1"><strong>Toutes les matières en illimité 24h/24</strong> (Maths, Physique-Chimie, SVT, Courbes, Schémas & Fiches PDF)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                        <span data-i18n="hero_b2"><strong>Réglé selon TON profil cognitif</strong> grâce au questionnaire de calibrage initial</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                        <span data-i18n="hero_b3"><strong>199 DH pour TOUTE L'ANNÉE</strong> — Soit moins de <strong>1 Dirham par jour d'école !</strong></span>
+                    </div>
+                </div>
+
+                <div class="cta-group animate" style="animation-delay: 0.3s; display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px;">
+                    <a href="#" class="btn btn-primary" id="start-btn" style="padding: 16px 32px; font-size: 1.05rem; font-weight: 800;" data-i18n="hero_cta_main">
+                        🚀 Régler mon Coach IA maintenant
+                    </a>
+                    <a href="#how-it-works" class="btn btn-secondary" style="padding: 16px 26px; font-size: 1rem;" data-i18n="hero_cta_sec">
+                        Voir comment ça marche
+                    </a>
+                </div>
+                <p class="price-tag animate" style="animation-delay: 0.4s; margin-top: 16px; font-weight: 600; color: var(--primary); font-size: 0.92rem;" data-i18n="hero_sub_price">
+                    ✨ Accès complet 1 an (toutes matières + générateur de schémas & PDF) : 199 DH seulement (≈ 0,55 DH / jour)
                 </p>
             </div>
-            <div class="hero-image animate" style="animation-delay: 0.5s;">
-                <img src="assets/bac_ia_maroc_hero.png" alt="Étudiant BAC IA" style="width: 100%; border-radius: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid var(--glass-border);">
+
+            <div class="hero-image animate" style="animation-delay: 0.4s; position: relative;">
+                <div class="hero-preview-card">
+                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--glass-border);">
+                        <img src="assets/logo-nova-bac-ia.jpg" alt="Logo NOVA BAC IA" style="width: 64px; height: 64px; border-radius: 16px; object-fit: cover; border: 1px solid var(--primary);">
+                        <div>
+                            <div style="font-weight: 800; font-size: 1.15rem;" data-i18n="card_preview_title">Coach NOVA BAC IA — En Direct 24h/24</div>
+                            <div style="color: #10b981; font-size: 0.8rem; font-weight: 700;" data-i18n="card_preview_status">● Prêt à t'expliquer en Français, Arabe ou Darija</div>
+                        </div>
+                    </div>
+                    <img src="assets/bac_ia_maroc_hero.png" alt="Étudiant NOVA BAC IA" style="width: 100%; border-radius: 20px; margin-bottom: 18px; border: 1px solid var(--glass-border);">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
+                        <div style="background: rgba(6,182,212,0.1); padding: 12px 8px; border-radius: 14px; border: 1px solid rgba(6,182,212,0.25);">
+                            <div style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">24h/24</div>
+                            <div style="font-size: 0.72rem; color: var(--text-dim);" data-i18n="stat_1">Même à 2h du matin</div>
+                        </div>
+                        <div style="background: rgba(139,92,246,0.1); padding: 12px 8px; border-radius: 14px; border: 1px solid rgba(139,92,246,0.25);">
+                            <div style="font-weight: 800; font-size: 1.2rem; color: var(--accent);" data-i18n="stat_2_val">Toutes</div>
+                            <div style="font-size: 0.72rem; color: var(--text-dim);" data-i18n="stat_2">Les matières du Bac</div>
+                        </div>
+                        <div style="background: rgba(16,185,129,0.1); padding: 12px 8px; border-radius: 14px; border: 1px solid rgba(16,185,129,0.25);">
+                            <div style="font-weight: 800; font-size: 1.2rem; color: #10b981;">&lt; 1 DH</div>
+                            <div style="font-size: 0.72rem; color: var(--text-dim);" data-i18n="stat_3">Par jour d'école</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="features" class="features">
-        <div class="container">
-            <div class="grid">
-                <div class="card glass animate">
-                    <i class="fa-solid fa-brain"></i>
-                    <h3>Diagnostic IA</h3>
-                    <p>Analyse précise de ton niveau, de ton stress et de ton organisation pour un plan sur mesure.</p>
+    <!-- WRAPPER #features (Masqué automatiquement quand l'élève passe au Questionnaire ou au Paiement) -->
+    <div id="features">
+
+        <!-- =================================================================
+             SECTION 2 : LE CRI D'ALARME (LA DÉTRESSE DE L'ÉLÈVE FACE AU BAC)
+             ================================================================= -->
+        <section class="lp-section lp-alt-section">
+            <div class="container">
+                <div class="lp-section-header">
+                    <span class="lp-eyebrow" style="color: #ef4444; border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1);" data-i18n="pain_eyebrow">
+                        ⚠️ LA RÉALITÉ QUE PERSONNE NE DIT TOUT HAUT
+                    </span>
+                    <h2 class="lp-title" data-i18n="pain_title">
+                        Pourquoi tant d'élèves intelligents échouent ou perdent des points bêtement ?
+                    </h2>
+                    <p class="lp-subtitle" data-i18n="pain_subtitle">
+                        Ce n'est pas parce que tu manques d'intelligence. C'est parce que le système actuel te laisse seul au moment où tu as le plus besoin d'aide.
+                    </p>
                 </div>
-                <div class="card glass animate">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <h3>Plan de 30 Jours</h3>
-                    <p>Un planning quotidien structuré pour ne plus jamais te sentir perdu devant tes cahiers.</p>
-                </div>
-                <div class="card glass animate">
-                    <i class="fa-solid fa-magic-wand-sparkles"></i>
-                    <h3>Prompts IA Optimisés</h3>
-                    <p>Utilise ChatGPT comme un pro avec des instructions conçues pour la réussite au Bac Marocain.</p>
+
+                <div class="pain-grid">
+                    <!-- Douleur 1 -->
+                    <div class="pain-card">
+                        <span class="pain-number">9,75 / 20</span>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 10px;" data-i18n="pain_1_title">Le cauchemar du point manquant</h3>
+                        <p style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.6;" data-i18n="pain_1_desc">
+                            Rater son Bac, le rattrapage ou le seuil d'entrée en Médecine / ENSA / ENCG pour <strong>0,5 ou 1 seul point</strong> à cause d'un chapitre mal compris, c'est perdre une année entière de sa vie.
+                        </p>
+                    </div>
+
+                    <!-- Douleur 2 -->
+                    <div class="pain-card">
+                        <span class="pain-number">2 500 DH/mois</span>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 10px;" data-i18n="pain_2_title">Les cours particuliers ("Swaya3") hors de prix</h3>
+                        <p style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.6;" data-i18n="pain_2_desc">
+                            Payer un prof de Maths + un prof de Physique + un prof de SVT coûte une fortune chaque mois. Et quand on n'a pas les moyens ? On reste bloqué devant son cahier sans personne à qui poser ses questions.
+                        </p>
+                    </div>
+
+                    <!-- Douleur 3 -->
+                    <div class="pain-card">
+                        <span class="pain-number">23h30</span>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 10px;" data-i18n="pain_3_title">Bloqué seul la veille de l'examen</h3>
+                        <p style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.6;" data-i18n="pain_3_desc">
+                            En classe ou en groupe de soutien, le professeur utilise <strong>une seule méthode pour 35 élèves</strong>. Si tu n'as pas compris du premier coup ou que tu bloques le soir chez toi, personne n'est là pour te réexpliquer à TON rythme.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- =================================================================
+             SECTION 3 : LE SECRET DE NOVA BAC IA — LE RÉGLAGE COGNITIF SUR-MESURE
+             ================================================================= -->
+        <section id="how-it-works" class="lp-section">
+            <div class="container">
+                <div class="lp-section-header">
+                    <span class="lp-eyebrow" data-i18n="method_eyebrow">
+                        🧠 LA RÉVOLUTION PÉDAGOGIQUE NOVA BAC IA
+                    </span>
+                    <h2 class="lp-title" data-i18n="method_title">
+                        Les professeurs humains ont une seule méthode. <br>NOVA BAC IA se règle sur <span style="color: var(--primary);">TON cerveau</span>.
+                    </h2>
+                    <p class="lp-subtitle" data-i18n="method_subtitle">
+                        Chaque élève est différent : certains comprennent par les exercices, d'autres ont besoin qu'on leur décortique la leçon, d'autres retiennent par les schémas ou le par-cœur. <strong>Avant de commencer, tu réponds à un questionnaire de calibrage qui règle ton Coach IA sur mesure.</strong>
+                    </p>
+                </div>
+
+                <!-- Les 3 étapes du miracle -->
+                <div class="grid" style="margin-bottom: 50px;">
+                    <div class="card glass">
+                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;" data-i18n="step_1_tag">ÉTAPE 1 • 3 MINUTES</div>
+                        <i class="fa-solid fa-sliders"></i>
+                        <h3 data-i18n="step_1_title">1. Le Questionnaire de Réglage</h3>
+                        <p data-i18n="step_1_desc">Tu réponds à 8 questions sur ta façon d'apprendre, ton niveau de stress, ta filière et ton temps disponible. Ce diagnostic règle le cerveau de NOVA BAC IA pour toi.</p>
+                    </div>
+
+                    <div class="card glass">
+                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;" data-i18n="step_2_tag">ÉTAPE 2 • SUR-MESURE</div>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <h3 data-i18n="step_2_title">2. Un Prof Virtuel qui s'adapte à Toi</h3>
+                        <p data-i18n="step_2_desc">Pose n'importe quelle question dans n'importe quelle matière (en Français, Arabe ou Darija). Le coach t'explique directement avec la méthode exacte qui débloque ton cerveau.</p>
+                    </div>
+
+                    <div class="card glass">
+                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;" data-i18n="step_3_tag">ÉTAPE 3 • OUTILS COMPLETS</div>
+                        <i class="fa-solid fa-compass-drafting"></i>
+                        <h3 data-i18n="step_3_title">3. Courbes, Schémas, Exercices & PDF</h3>
+                        <p data-i18n="step_3_desc">Il trace tes courbes de fonctions $f(x)$, dessine tes circuits de Physique, crée tes planches anatomiques de SVT, corrige tes exercices et imprime tes fiches en PDF A4 !</p>
+                    </div>
+                </div>
+
+                <!-- Les prédispositions d'élèves prises en charge -->
+                <div class="profiles-showcase-box">
+                    <h3 style="text-align: center; font-size: 1.4rem; margin-bottom: 28px;" data-i18n="profiles_box_title">
+                        🎯 Quelle que soit ta manière de comprendre, NOVA BAC IA parle ton langage :
+                    </h3>
+                    <div class="profile-pill-grid">
+                        <div class="profile-showcase-card">
+                            <div style="font-size: 1.5rem; margin-bottom: 8px;">⚡</div>
+                            <h4 style="color: var(--primary); margin-bottom: 6px;" data-i18n="prof_1_t">Tu comprends par la pratique ?</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-dim);" data-i18n="prof_1_d">Il va droit au but : formule essentielle + exemple concret corrigé pas-à-pas + 3 exercices progressifs.</p>
+                        </div>
+                        <div class="profile-showcase-card">
+                            <div style="font-size: 1.5rem; margin-bottom: 8px;">🧱</div>
+                            <h4 style="color: var(--primary); margin-bottom: 6px;" data-i18n="prof_2_t">Tu as besoin qu'on reprenne la leçon de zéro ?</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-dim);" data-i18n="prof_2_d">Il reconstruit toutes tes bases avec des mots simples, sans sauter aucune étape de calcul.</p>
+                        </div>
+                        <div class="profile-showcase-card">
+                            <div style="font-size: 1.5rem; margin-bottom: 8px;">📐</div>
+                            <h4 style="color: var(--primary); margin-bottom: 6px;" data-i18n="prof_3_t">Tu as une mémoire visuelle ?</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-dim);" data-i18n="prof_3_d">Il génère des tableaux comparatifs, des courbes mathématiques exactes, des schémas de physique et des planches SVT.</p>
+                        </div>
+                        <div class="profile-showcase-card">
+                            <div style="font-size: 1.5rem; margin-bottom: 8px;">🧠</div>
+                            <h4 style="color: var(--primary); margin-bottom: 6px;" data-i18n="prof_4_t">Tu apprends par cœur mais tu oublies vite ?</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-dim);" data-i18n="prof_4_d">Il te donne des moyens mnémotechniques, les 3 points vitaux à retenir et des quiz rapides d'ancrage.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             SECTION 4 : COMPARATIF CHOC (COURS PARTICULIERS VS NOVA BAC IA)
+             ================================================================= -->
+        <section class="lp-section lp-alt-section">
+            <div class="container">
+                <div class="lp-section-header">
+                    <span class="lp-eyebrow" data-i18n="comp_eyebrow">⚖️ COMPARAISON DIRECTE</span>
+                    <h2 class="lp-title" data-i18n="comp_title">Pourquoi payer pour chaque matière quand un seul Coach fait tout, 24h/24 ?</h2>
+                </div>
+
+                <div class="vs-table-wrap">
+                    <table class="vs-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="th_crit">Critère</th>
+                                <th style="color: #ef4444;" data-i18n="th_trad">❌ Cours Particuliers Classiques ("Swaya3")</th>
+                                <th class="vs-highlight-col" style="color: var(--primary);" data-i18n="th_nova">✅ Coach NOVA BAC IA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 700;" data-i18n="row1_c">Matières couvertes</td>
+                                <td style="color: var(--text-dim);" data-i18n="row1_t">1 prof par matière (il faut payer Maths + PC + SVT séparément)</td>
+                                <td class="vs-highlight-col" style="font-weight: 700;" data-i18n="row1_n">Toutes les matières du Bac incluses dans un seul compte</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700;" data-i18n="row2_c">Disponibilité</td>
+                                <td style="color: var(--text-dim);" data-i18n="row2_t">2h par semaine à horaire fixe (absent le soir quand tu bloques)</td>
+                                <td class="vs-highlight-col" style="font-weight: 700;" data-i18n="row2_n">Disponible 24h/24 et 7j/7 — Même à minuit la veille de l'examen</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700;" data-i18n="row3_c">Pédagogie & Adaptation</td>
+                                <td style="color: var(--text-dim);" data-i18n="row3_t">Une seule méthode identique pour tout le groupe</td>
+                                <td class="vs-highlight-col" style="font-weight: 700;" data-i18n="row3_n">Calibré par questionnaire selon TON profil cognitif personnel</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700;" data-i18n="row4_c">Supports & Fiches</td>
+                                <td style="color: var(--text-dim);" data-i18n="row4_t">Notes prises à la hâte sur un cahier</td>
+                                <td class="vs-highlight-col" style="font-weight: 700;" data-i18n="row4_n">Courbes, schémas Physique/SVT, sauvegarde locale & impression PDF A4</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700;" data-i18n="row5_c">Coût pour l'année</td>
+                                <td style="color: #ef4444; font-weight: 800;" data-i18n="row5_t">12 000 à 20 000 DH / an</td>
+                                <td class="vs-highlight-col" style="color: #10b981; font-weight: 800; font-size: 1.1rem;" data-i18n="row5_n">199 DH / AN seulement (moins de 1 DH par jour !)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             SECTION 5 : PARENTS & PROFESSEURS ENGAGÉS
+             ================================================================= -->
+        <section class="lp-section">
+            <div class="container">
+                <div class="audience-split">
+                    <!-- Carte Parents -->
+                    <div class="audience-box" style="border-color: rgba(245, 158, 11, 0.35);">
+                        <div>
+                            <span class="lp-eyebrow" style="color: #f59e0b; border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.1);" data-i18n="parents_badge">
+                                👨‍👩‍👧‍👦 MESSAGE AUX PARENTS D'ÉLÈVES
+                            </span>
+                            <h3 style="font-size: 1.65rem; font-weight: 800; margin-bottom: 14px;" data-i18n="parents_title">
+                                Fatigués de dépenser des milliers de dirhams en cours particuliers sans voir de résultats ?
+                            </h3>
+                            <p style="color: var(--text-dim); line-height: 1.7; margin-bottom: 18px;" data-i18n="parents_p1">
+                                Voir son enfant stressé, perdre confiance ou risquer le redoublement alors que vous vous sacrifiez financièrement pour lui payer des heures supplémentaires est épuisant.
+                            </p>
+                            <p style="color: var(--text-main); line-height: 1.7; margin-bottom: 24px;" data-i18n="parents_p2">
+                                <strong>NOVA BAC IA</strong> ne remplace pas seulement des heures de soutien coûteuses : il donne à votre enfant un <strong>planning de révision quotidien sur 30 jours</strong>, une méthode de travail structurée et un tuteur patient qui lui réexplique chaque leçon autant de fois qu'il le faut — pour <strong>199 DH l'année entière</strong>.
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-primary open-auth-btn" style="width: 100%;" data-i18n="parents_cta">
+                            Inscrire mon enfant maintenant (199 DH / an)
+                        </button>
+                    </div>
+
+                    <!-- Carte Professeurs -->
+                    <div class="audience-box" style="border-color: rgba(6, 182, 212, 0.35);">
+                        <div>
+                            <span class="lp-eyebrow" data-i18n="teachers_badge">
+                                👨‍🏫 AUX PROFESSEURS SOUCIEUX DE LA RÉUSSITE DE LEURS ÉLÈVES
+                            </span>
+                            <h3 style="font-size: 1.65rem; font-weight: 800; margin-bottom: 14px;" data-i18n="teachers_title">
+                                Conseillez à vos élèves l'assistant qui prolonge votre enseignement à la maison.
+                            </h3>
+                            <p style="color: var(--text-dim); line-height: 1.7; margin-bottom: 18px;" data-i18n="teachers_p1">
+                                En tant qu'enseignant dévoué, vous voulez voir chacun de vos élèves réussir son Bac. Mais avec des classes chargées et un programme dense, vous ne pouvez pas être derrière chaque élève le soir chez lui.
+                            </p>
+                            <p style="color: var(--text-main); line-height: 1.7; margin-bottom: 24px;" data-i18n="teachers_p2">
+                                <strong>NOVA BAC IA</strong> respecte scrupuleusement le cadre référentiel du Baccalauréat Marocain (BIOF & Arabe) et la rigueur de rédaction officielle. En le conseillant à vos élèves, vous permettez même aux plus modestes de s'entraîner sur des exercices progressifs, d'imprimer leurs fiches et d'arriver en classe prêts à suivre votre cours.
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-secondary open-auth-btn" style="width: 100%; border-color: var(--primary); color: var(--primary);" data-i18n="teachers_cta">
+                            Tester la plateforme & la recommander à mes élèves
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             SECTION 6 : TARIF UNIQUE — MOINS DE 1 DH PAR JOUR D'ÉCOLE
+             ================================================================= -->
+        <section class="lp-section" style="padding-top: 30px; padding-bottom: 90px;">
+            <div class="container">
+                <div class="pricing-mega-card">
+                    <span class="lp-eyebrow" style="background: rgba(16,185,129,0.15); color: #10b981; border-color: rgba(16,185,129,0.4);" data-i18n="price_badge">
+                        🎓 ABONNEMENT ANNUEL TOUT COMPRIS
+                    </span>
+                    <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 10px;" data-i18n="price_title">
+                        Le prix d'un seul cahier pour sauver toute ton année du Bac.
+                    </h2>
+                    <p style="color: var(--text-dim); margin-bottom: 24px;" data-i18n="price_subtitle">
+                        Pas d'abonnement mensuel caché. Un seul paiement pour 12 mois d'accès illimité.
+                    </p>
+
+                    <div style="margin: 24px 0;">
+                        <div style="font-size: 4rem; font-weight: 800; line-height: 1; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            199 DH <span style="font-size: 1.3rem; color: var(--text-dim); -webkit-text-fill-color: var(--text-dim);">/ an</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 1.05rem; font-weight: 700; color: #10b981;" data-i18n="price_daily">
+                            ⚡ Soit 0,55 DH par jour — Même pas 1 Dirham par jour d'école !
+                        </div>
+                    </div>
+
+                    <div style="text-align: left; max-width: 480px; margin: 28px auto; display: grid; gap: 12px; font-size: 0.95rem;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                            <span data-i18n="p_feat_1">Diagnostic cognitif complet + Réglage personnalisé de l'IA</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                            <span data-i18n="p_feat_2">Coach IA illimité 24h/24 dans toutes les matières (Français, Arabe, Darija)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                            <span data-i18n="p_feat_3">Studio Visuel : Courbes Maths, Dessins Physique-Chimie & Planches SVT</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                            <span data-i18n="p_feat_4">Planning de révision 30 jours + Téléchargement & Impression PDF A4</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                            <span data-i18n="p_feat_5">Paiement facile par Carte Bancaire (déblocage 3s) ou CashPlus / WafaCash</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary open-auth-btn" style="width: 100%; max-width: 440px; padding: 18px 30px; font-size: 1.12rem; font-weight: 800;" data-i18n="price_cta">
+                        🚀 Commencer mon Diagnostic maintenant
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
 
     <!-- Auth Modal -->
-    <div id="auth-modal" class="modal-overlay">
+    <div id="auth-modal" class="modal-overlay" dir="ltr">
         <div class="modal glass animate">
             <h2 id="modal-title" style="margin-bottom: 25px; text-align: center;">Créer ton compte</h2>
             <form id="auth-form">
@@ -81,9 +434,9 @@
                     <label for="email">Email ou Identifiant</label>
                     <input type="text" id="email" required placeholder="votre@email.com">
                 </div>
-                <div class="form-group" id="password-group" style="display: none;">
+                <div class="form-group" id="password-group">
                     <label for="password">Mot de passe</label>
-                    <input type="password" id="password" placeholder="••••••••">
+                    <input type="password" id="password" required placeholder="Minimum 6 caractères">
                 </div>
                 <div class="form-group">
                     <label for="grade_level">Niveau scolaire</label>
@@ -136,15 +489,7 @@
                         <option value="darija">الدارجة المغربية</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Suivant</button>
-                
-                <div style="text-align: center; margin: 15px 0; color: var(--text-dim); font-size: 0.9rem;">
-                    — Ou —
-                </div>
-                
-                <button type="button" id="google-auth-btn" class="btn btn-secondary" style="width: 100%; background: white; color: #333; display: flex; align-items: center; justify-content: center;">
-                    <i class="fa-brands fa-google" style="color: #DB4437; margin-right: 8px;"></i> Continuer avec Google
-                </button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Créer mon compte</button>
             </form>
             <p id="auth-switch" style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-dim); cursor: pointer;">
                 Déjà inscrit ? Connecte-toi ici.
@@ -153,23 +498,23 @@
     </div>
 
     <!-- Questionnaire Section (Hidden by default) -->
-    <section id="questionnaire" class="features" style="display: none;">
+    <section id="questionnaire" class="features" style="display: none;" dir="ltr">
         <div class="container">
-            <div class="glass animate" style="max-width: 800px; margin: 0 auto; padding: 40px;">
+            <div class="glass animate" style="max-width: 750px; margin: 20px auto; padding: 40px 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); border-radius: 24px;">
                 <div id="quiz-header" style="text-align: center; margin-bottom: 30px;">
-                    <h2 id="quiz-title">Ton Diagnostic</h2>
-                    <p id="quiz-progress" style="color: var(--text-dim);">Étape 1 sur 5</p>
-                    <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 15px;">
-                        <div id="progress-bar" style="width: 20%; height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s ease;"></div>
+                    <h2 id="quiz-title" style="font-size: 1.8rem; font-weight: 800; margin-bottom: 8px;">Ton Diagnostic & Réglage IA</h2>
+                    <p id="quiz-progress" style="color: var(--text-dim); font-size: 0.95rem; font-weight: 600;">Étape 1 sur 8</p>
+                    <div style="width: 100%; height: 6px; background: rgba(150,150,150,0.15); border-radius: 3px; margin-top: 15px; overflow: hidden;">
+                        <div id="progress-bar" style="width: 12.5%; height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.3s ease;"></div>
                     </div>
                 </div>
                 <form id="quiz-form">
                     <div id="quiz-step-content">
                         <!-- Content will be injected by JS -->
                     </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-                        <button type="button" id="prev-step" class="btn btn-secondary" style="display: none;">Précédent</button>
-                        <button type="button" id="next-step" class="btn btn-primary">Suivant</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 35px; gap: 15px;">
+                        <button type="button" id="prev-step" class="btn btn-secondary" style="display: none; padding: 12px 28px;">Précédent</button>
+                        <button type="button" id="next-step" class="btn btn-primary" style="margin-left: auto; padding: 12px 36px; font-weight: 700;">Suivant</button>
                     </div>
                 </form>
             </div>
@@ -177,28 +522,45 @@
     </section>
 
     <!-- Payment Section (Hidden by default) -->
-    <section id="payment" class="features" style="display: none;">
+    <section id="payment" class="features" style="display: none;" dir="ltr">
         <div class="container" style="text-align: center;">
             <div class="glass animate" style="max-width: 600px; margin: 0 auto; padding: 40px;">
                 <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--secondary); margin-bottom: 20px;"></i>
                 <h2>Dernière étape !</h2>
-                <p style="margin-bottom: 30px;">Pour débloquer ton diagnostic personnalisé et ton plan de 30 jours, effectue ton paiement de 199 DH.</p>
+                <p style="margin-bottom: 30px;">Pour activer ton Coach NOVA BAC IA pendant 1 an complet (199 DH seulement, soit moins de 1 DH/jour), choisis ton mode de paiement :</p>
                 
-                <div style="text-align: left; background: rgba(0,0,0,0.2); padding: 25px; border-radius: 16px; margin-bottom: 30px;">
-                    <h4 style="margin-bottom: 15px; color: var(--secondary);">Instructions de paiement :</h4>
-                    <p style="font-size: 0.95rem; margin-bottom: 10px;">1. Envoie <strong>199 DH</strong> via <strong>CashPlus</strong> ou <strong>WafaCash</strong>.</p>
-                    <p style="font-size: 0.95rem; margin-bottom: 10px;">2. Nom du destinataire : <strong>M. LAMKHANNET SALAH EDINE AHMED</strong></p>
-                    <p style="font-size: 0.95rem; margin-bottom: 15px;">3. Prends une photo du reçu.</p>
-                    <a href="https://wa.me/212716014148?text=Bonjour, voici ma preuve de paiement pour BAC IA MAROC" target="_blank" class="btn btn-primary" style="width: 100%; text-align: center; background: #25D366; border: none;">
-                        <i class="fa-brands fa-whatsapp"></i> Envoyer la preuve
-                    </a>
-                </div>
-                
-                <p style="font-size: 0.85rem; color: var(--text-dim);">
-                    Ton compte sera validé manuellement par un administrateur dans un délai de 1 à 6 heures après réception de la preuve.
-                </p>
-                <div style="margin-top: 30px; padding: 15px; border-top: 1px solid var(--glass-border);">
-                    <p>Statut actuel : <span id="payment-status" style="color: var(--secondary); font-weight: 700;">En attente de paiement</span></p>
+                <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px;">
+                    <!-- Option 1: Carte Bancaire / Déblocage Immédiat -->
+                    <div style="text-align: left; background: rgba(99, 102, 241, 0.1); border: 1.5px solid var(--primary); padding: 25px; border-radius: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h4 style="color: var(--primary); font-size: 1.1rem; font-weight: 700; margin: 0;">
+                                <i class="fa-solid fa-bolt" style="margin-right: 8px;"></i> Paiement Carte Bancaire (199 DH / an)
+                            </h4>
+                            <span class="badge-premium" style="background: rgba(37, 211, 102, 0.2); color: #25D366; border-color: #25D366;">Accès Immédiat</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 18px;">
+                            Paiement 100% sécurisé par carte bancaire (Maroc ou International). Ton accès annuel est ouvert automatiquement en 3 secondes.
+                        </p>
+                        <a id="stripe-pay-btn" href="https://buy.stripe.com/00w3cv6ci5kz5Jx5uKgbm0w" target="_blank" class="btn btn-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; font-size: 1.05rem;">
+                            <i class="fa-solid fa-credit-card"></i> Payer 199 DH par Carte
+                        </a>
+                    </div>
+
+                    <!-- Option 2: CashPlus / WafaCash (Manuel) -->
+                    <div style="text-align: left; background: var(--input-bg); padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border);">
+                        <h4 style="margin-bottom: 15px; color: var(--secondary); font-size: 1rem;">
+                            <i class="fa-solid fa-money-bill-wave" style="margin-right: 8px;"></i> Ou en Espèces (CashPlus / WafaCash) :
+                        </h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 8px;">1. Envoie <strong>199 DH</strong> via <strong>CashPlus</strong> ou <strong>WafaCash</strong>.</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 8px;">2. Destinataire : <strong>M. LAMKHANNET SALAH EDINE AHMED</strong></p>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px;">3. Envoie la photo du reçu par WhatsApp :</p>
+                        <a href="https://wa.me/212716014148?text=Bonjour, voici ma preuve de paiement pour NOVA BAC IA" target="_blank" class="btn btn-secondary" style="width: 100%; text-align: center; background: #25D366; color: white; border: none; font-weight: 600;">
+                            <i class="fa-brands fa-whatsapp"></i> Envoyer le reçu sur WhatsApp
+                        </a>
+                        <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 10px; text-align: center;">
+                            Validation manuelle sous 1h à 6h après vérification du reçu.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,16 +573,19 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js?v=3"></script>
-    <script src="js/main.js?v=3"></script>
-    <script src="js/auth.js?v=3"></script>
-    <script src="js/questionnaire.js?v=3"></script>
+    <script src="js/supabase-config.js?v=5"></script>
+    <script src="js/main.js?v=5"></script>
+    <script src="js/auth.js?v=5"></script>
+    <script src="js/questionnaire.js?v=5"></script>
     <script>
         function applyTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
+            const iconClass = savedTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
             const icon = document.getElementById('theme-icon');
-            if (icon) icon.className = savedTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            const headerIcon = document.getElementById('header-theme-icon');
+            if (icon) icon.className = iconClass;
+            if (headerIcon) headerIcon.className = iconClass;
         }
 
         function toggleTheme() {
@@ -228,8 +593,227 @@
             const target = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', target);
             localStorage.setItem('theme', target);
+            const iconClass = target === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
             const icon = document.getElementById('theme-icon');
-            if (icon) icon.className = target === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            const headerIcon = document.getElementById('header-theme-icon');
+            if (icon) icon.className = iconClass;
+            if (headerIcon) headerIcon.className = iconClass;
+        }
+
+        // Dictionnaire Bilingue Français <-> Darija Marocaine (Émotionnel & Percutant)
+        const landingTranslations = {
+            fr: {
+                urgency_top: "⚠️ <strong>Chaque année au Maroc, des milliers d'élèves ratent le Bac ou le seuil de leur école de rêve à 0,25 ou 1 point près.</strong> Ne laisse pas ce point t'échapper : <strong>199 DH pour toute l'année (moins de 1 DH / jour) !</strong>",
+                brand_sub: "COACH BAC MAROC 24H/24 • TOUTES MATIÈRES",
+                nav_login: "Se connecter",
+                nav_cta: "Faire mon Diagnostic",
+                hero_badge: "🔥 LE 1er COACH IA SUR-MESURE POUR LE BAC AU MAROC",
+                hero_title: "Il manque parfois <span style='color: var(--primary);'>1 seul point</span> pour avoir le Bac. Ne laisse pas ton avenir se jouer à un détail.",
+                hero_desc: "Tout le monde n'a pas les moyens de payer <strong>2 000 DH par mois</strong> en cours particuliers pour chaque matière. Avec <strong>NOVA BAC IA</strong>, tu as ton propre professeur particulier d'élite <strong>disponible 24h/24 et 7j/7 dans TOUTES les matières</strong>, calibré exactement sur la façon dont <strong>TON cerveau</strong> comprend les cours.",
+                hero_b1: "<strong>Toutes les matières en illimité 24h/24</strong> (Maths, Physique-Chimie, SVT, Courbes, Schémas & Fiches PDF)",
+                hero_b2: "<strong>Réglé selon TON profil cognitif</strong> grâce au questionnaire de calibrage initial",
+                hero_b3: "<strong>199 DH pour TOUTE L'ANNÉE</strong> — Soit moins de <strong>1 Dirham par jour d'école !</strong>",
+                hero_cta_main: "🚀 Régler mon Coach IA maintenant",
+                hero_cta_sec: "Voir comment ça marche",
+                hero_sub_price: "✨ Accès complet 1 an (toutes matières + générateur de schémas & PDF) : 199 DH seulement (≈ 0,55 DH / jour)",
+                card_preview_title: "Coach NOVA BAC IA — En Direct 24h/24",
+                card_preview_status: "● Prêt à t'expliquer en Français, Arabe ou Darija",
+                stat_1: "Même à 2h du matin",
+                stat_2_val: "Toutes",
+                stat_2: "Les matières du Bac",
+                stat_3: "Par jour d'école",
+                pain_eyebrow: "⚠️ LA RÉALITÉ QUE PERSONNE NE DIT TOUT HAUT",
+                pain_title: "Pourquoi tant d'élèves intelligents échouent ou perdent des points bêtement ?",
+                pain_subtitle: "Ce n'est pas parce que tu manques d'intelligence. C'est parce que le système actuel te laisse seul au moment où tu as le plus besoin d'aide.",
+                pain_1_title: "Le cauchemar du point manquant",
+                pain_1_desc: "Rater son Bac, le rattrapage ou le seuil d'entrée en Médecine / ENSA / ENCG pour <strong>0,5 ou 1 seul point</strong> à cause d'un chapitre mal compris, c'est perdre une année entière de sa vie.",
+                pain_2_title: "Les cours particuliers (\"Swaya3\") hors de prix",
+                pain_2_desc: "Payer un prof de Maths + un prof de Physique + un prof de SVT coûte une fortune chaque mois. Et quand on n'a pas les moyens ? On reste bloqué devant son cahier sans personne à qui poser ses questions.",
+                pain_3_title: "Bloqué seul la veille de l'examen",
+                pain_3_desc: "En classe ou en groupe de soutien, le professeur utilise <strong>une seule méthode pour 35 élèves</strong>. Si tu n'as pas compris du premier coup ou que tu bloques le soir chez toi, personne n'est là pour te réexpliquer à TON rythme.",
+                method_eyebrow: "🧠 LA RÉVOLUTION PÉDAGOGIQUE NOVA BAC IA",
+                method_title: "Les professeurs humains ont une seule méthode. <br>NOVA BAC IA se règle sur <span style='color: var(--primary);'>TON cerveau</span>.",
+                method_subtitle: "Chaque élève est différent : certains comprennent par les exercices, d'autres ont besoin qu'on leur décortique la leçon, d'autres retiennent par les schémas ou le par-cœur. <strong>Avant de commencer, tu réponds à un questionnaire de calibrage qui règle ton Coach IA sur mesure.</strong>",
+                step_1_tag: "ÉTAPE 1 • 3 MINUTES",
+                step_1_title: "1. Le Questionnaire de Réglage",
+                step_1_desc: "Tu réponds à 8 questions sur ta façon d'apprendre, ton niveau de stress, ta filière et ton temps disponible. Ce diagnostic règle le cerveau de NOVA BAC IA pour toi.",
+                step_2_tag: "ÉTAPE 2 • SUR-MESURE",
+                step_2_title: "2. Un Prof Virtuel qui s'adapte à Toi",
+                step_2_desc: "Pose n'importe quelle question dans n'importe quelle matière (en Français, Arabe ou Darija). Le coach t'explique directement avec la méthode exacte qui débloque ton cerveau.",
+                step_3_tag: "ÉTAPE 3 • OUTILS COMPLETS",
+                step_3_title: "3. Courbes, Schémas, Exercices & PDF",
+                step_3_desc: "Il trace tes courbes de fonctions f(x), dessine tes circuits de Physique, crée tes planches anatomiques de SVT, corrige tes exercices et imprime tes fiches en PDF A4 !",
+                profiles_box_title: "🎯 Quelle que soit ta manière de comprendre, NOVA BAC IA parle ton langage :",
+                prof_1_t: "Tu comprends par la pratique ?",
+                prof_1_d: "Il va droit au but : formule essentielle + exemple concret corrigé pas-à-pas + 3 exercices progressifs.",
+                prof_2_t: "Tu as besoin qu'on reprenne la leçon de zéro ?",
+                prof_2_d: "Il reconstruit toutes tes bases avec des mots simples, sans sauter aucune étape de calcul.",
+                prof_3_t: "Tu as une mémoire visuelle ?",
+                prof_3_d: "Il génère des tableaux comparatifs, des courbes mathématiques exactes, des schémas de physique et des planches SVT.",
+                prof_4_t: "Tu apprends par cœur mais tu oublies vite ?",
+                prof_4_d: "Il te donne des moyens mnémotechniques, les 3 points vitaux à retenir et des quiz rapides d'ancrage.",
+                comp_eyebrow: "⚖️ COMPARAISON DIRECTE",
+                comp_title: "Pourquoi payer pour chaque matière quand un seul Coach fait tout, 24h/24 ?",
+                th_crit: "Critère",
+                th_trad: "❌ Cours Particuliers Classiques (\"Swaya3\")",
+                th_nova: "✅ Coach NOVA BAC IA",
+                row1_c: "Matières couvertes",
+                row1_t: "1 prof par matière (il faut payer Maths + PC + SVT séparément)",
+                row1_n: "Toutes les matières du Bac incluses dans un seul compte",
+                row2_c: "Disponibilité",
+                row2_t: "2h par semaine à horaire fixe (absent le soir quand tu bloques)",
+                row2_n: "Disponible 24h/24 et 7j/7 — Même à minuit la veille de l'examen",
+                row3_c: "Pédagogie & Adaptation",
+                row3_t: "Une seule méthode identique pour tout le groupe",
+                row3_n: "Calibré par questionnaire selon TON profil cognitif personnel",
+                row4_c: "Supports & Fiches",
+                row4_t: "Notes prises à la hâte sur un cahier",
+                row4_n: "Courbes, schémas Physique/SVT, sauvegarde locale & impression PDF A4",
+                row5_c: "Coût pour l'année",
+                row5_t: "12 000 à 20 000 DH / an",
+                row5_n: "199 DH / AN seulement (moins de 1 DH par jour !)",
+                parents_badge: "👨‍👩‍👧‍👦 MESSAGE AUX PARENTS D'ÉLÈVES",
+                parents_title: "Fatigués de dépenser des milliers de dirhams en cours particuliers sans voir de résultats ?",
+                parents_p1: "Voir son enfant stressé, perdre confiance ou risquer le redoublement alors que vous vous sacrifiez financièrement pour lui payer des heures supplémentaires est épuisant.",
+                parents_p2: "<strong>NOVA BAC IA</strong> ne remplace pas seulement des heures de soutien coûteuses : il donne à votre enfant un <strong>planning de révision quotidien sur 30 jours</strong>, une méthode de travail structurée et un tuteur patient qui lui réexplique chaque leçon autant de fois qu'il le faut — pour <strong>199 DH l'année entière</strong>.",
+                parents_cta: "Inscrire mon enfant maintenant (199 DH / an)",
+                teachers_badge: "👨‍🏫 AUX PROFESSEURS SOUCIEUX DE LA RÉUSSITE DE LEURS ÉLÈVES",
+                teachers_title: "Conseillez à vos élèves l'assistant qui prolonge votre enseignement à la maison.",
+                teachers_p1: "En tant qu'enseignant dévoué, vous voulez voir chacun de vos élèves réussir son Bac. Mais avec des classes chargées et un programme dense, vous ne pouvez pas être derrière chaque élève le soir chez lui.",
+                teachers_p2: "<strong>NOVA BAC IA</strong> respecte scrupuleusement le cadre référentiel du Baccalauréat Marocain (BIOF & Arabe) et la rigueur de rédaction officielle. En le conseillant à vos élèves, vous permettez même aux plus modestes de s'entraîner sur des exercices progressifs, d'imprimer leurs fiches et d'arriver en classe prêts à suivre votre cours.",
+                teachers_cta: "Tester la plateforme & la recommander à mes élèves",
+                price_badge: "🎓 ABONNEMENT ANNUEL TOUT COMPRIS",
+                price_title: "Le prix d'un seul cahier pour sauver toute ton année du Bac.",
+                price_subtitle: "Pas d'abonnement mensuel caché. Un seul paiement pour 12 mois d'accès illimité.",
+                price_daily: "⚡ Soit 0,55 DH par jour — Même pas 1 Dirham par jour d'école !",
+                p_feat_1: "Diagnostic cognitif complet + Réglage personnalisé de l'IA",
+                p_feat_2: "Coach IA illimité 24h/24 dans toutes les matières (Français, Arabe, Darija)",
+                p_feat_3: "Studio Visuel : Courbes Maths, Dessins Physique-Chimie & Planches SVT",
+                p_feat_4: "Planning de révision 30 jours + Téléchargement & Impression PDF A4",
+                p_feat_5: "Paiement facile par Carte Bancaire (déblocage 3s) ou CashPlus / WafaCash",
+                price_cta: "🚀 Commencer mon Diagnostic maintenant"
+            },
+            darija: {
+                urgency_top: "⚠️ <strong>كل عام فالمغرب، آلاف التلاميذ كيضيع ليهم الباك أولا العتبة ديال المدرسة اللي كيحلمو بيها غير على قبل 0,25 أولا نقطة وحدة!</strong> ما تخليش هاد النقطة تضيع منك: <strong>199 درهم للعام كامل (أقل من درهم واحد فالنهار)!</strong>",
+                brand_sub: "كوتش الباك فالمغرب 24/24 • جميع المواد",
+                nav_login: "تسجيل الدخول",
+                nav_cta: "بدا التشخيص ديالك",
+                hero_badge: "🔥 أول كوتش ذكي فالمغرب كيتبرمج على حساب دماغك",
+                hero_title: "بعض المرات غير <span style='color: var(--primary);'>نقطة وحدة</span> هي اللي كتفرق بين النجاح والرسوب فـ الباك. ما تخليش مستقبلك يضيع!",
+                hero_desc: "ماشي كلشي عندو الإمكانيات باش يخلص <strong>2000 درهم فالشهر</strong> ديال السوايع فكل مادة. مع <strong>NOVA BAC IA</strong>، عندك أستاذ خاص بيك بوحدك <strong>موجود 24 ساعة على 24 فجميع المواد</strong>، وكيشرح ليك بالطريقة اللي كيفهم بيها <strong>دماغك نتا بالضبط</strong>!",
+                hero_b1: "<strong>جميع المواد بلا حدود 24h/24</strong> (الماط، الفيزيك، SVT، المنحنيات، الرسومات وملخصات PDF للطباعة)",
+                hero_b2: "<strong>كيتريڭل على حساب طريقتك فالفهم</strong> من بعد ما كتجاوب على استمارة التشخيص الأولى",
+                hero_b3: "<strong>199 درهم للعام كامل</strong> — يعني أقل من <strong>درهم واحد فكل نهار ديال القراية!</strong>",
+                hero_cta_main: "🚀 ريڭل الكوتش الذكي ديالك دابا",
+                hero_cta_sec: "شوف كيفاش كيخدم",
+                hero_sub_price: "✨ اشتراك سنوي كامل (جميع المواد + رسم المنحنيات والخطاطات + PDF) بـ 199 درهم فقط للعام كامل!",
+                card_preview_title: "كوتش NOVA BAC IA — معاك ديما 24h/24",
+                card_preview_status: "● واجد يشرح ليك بالفرنسية، العربية أولا الدارجة المغربية",
+                stat_1: "حتى لـ 2 د الليل",
+                stat_2_val: "جميع",
+                stat_2: "مواد الباكالوريا",
+                stat_3: "فكل نهار قراية",
+                pain_eyebrow: "⚠️ الحقيقة اللي خاصنا نواجهوها قبل ما يفوت الفوت",
+                pain_title: "علاش بزاف ديال التلاميذ أذكياء كيتبلوكاو أولا كيضيعو النقط فـ الوطني؟",
+                pain_subtitle: "المشكل ماشي فذكائك. المشكل هو أنك ملي كتوحل بالليل قدام الدفتر، ما كتلقى حتى واحد يشرح ليك بالطريقة اللي كتناسبك.",
+                pain_1_title: "الحسرة ديال ديك النقطة اللي ناقصة",
+                pain_1_desc: "تخيل تضيع الباك أولا العتبة ديال الطب (Médecine) والمهندسين (ENSA / ENCG) غير على قبل <strong>0,5 أولا نقطة وحدة</strong> حيت بقى عندك درس ما مفهومش مزيان!",
+                pain_2_title: "السوايع الإضافية غاليين بزاف",
+                pain_2_desc: "باش دير السوايع فالماط + الفيزيك + SVT خاص ميزانية كبيرة كل شهر. والتلميذ اللي ما عندوش باش يخلص كيبقى بوحدو تالف قدام التمارين وما عارف لمن يسول.",
+                pain_3_title: "الأستاذ العادي عندو طريقة وحدة للجميع",
+                pain_3_desc: "فالقسم أولا فالسوايع، الأستاذ كيشرح <strong>بطريقة وحدة لـ 35 تلميذ</strong>. إلا ما دخلاتش ليك المعلومة بديك الطريقة، ولا وحلتي بليل ليلة الفرض، ما غادي تلقى حتى واحد يعاود يشرح ليك على قد عقلك.",
+                method_eyebrow: "🧠 السر البيداغوجي ديال NOVA BAC IA",
+                method_title: "الأساتذة العاديين كيشرحو بطريقة وحدة. <br>أما NOVA BAC IA كيتريڭل على حساب <span style='color: var(--primary);'>طريقة فهمك نتا</span>!",
+                method_subtitle: "كل تلميذ وكيفاش كيفهم: كاين اللي كيفهم بالتمارين، كاين اللي خاصك تعاود ليه الدرس من الصفر، وكاين اللي كيفهم بالخطاطات أولا الحفاظة. <strong>قبل ما تبدا، كتجاوب على أسئلة التشخيص باش الكوتش الذكي يتبرمج عليك نتا بالضبط ويدير معاك المعجزات!</strong>",
+                step_1_tag: "الخطوة 1 • 3 دقائق",
+                step_1_title: "1. استمارة الضبط والتشخيص",
+                step_1_desc: "كتجاوب على 8 ديال الأسئلة بساط باش نعرفو طريقتك فالفهم، نقط الضعف ديالك والشعبة ديالك. هاد التشخيص هو اللي كيريڭل الكوتش الذكي على قدك.",
+                step_2_tag: "الخطوة 2 • شرح مفصل وعن قرب",
+                step_2_title: "2. أستاذ افتراضي كيتأقلم معاك 24h/24",
+                step_2_desc: "سولو أي سؤال فـ أي مادة وبأي لغة بغيتي (فرنسية، عربية أو دارجة). غادي يشرح ليك مباشرة خطوة بخطوة بلا تعقيد وبلا ما يدوخك.",
+                step_3_tag: "الخطوة 3 • رسومات وتمارين و PDF",
+                step_3_title: "3. منحنيات، خطاطات الفيزيك و SVT و PDF",
+                step_3_desc: "كيرسم ليك الدوال والمنحنيات الرياضية، الدارات الكهربائية والفيزياء، خطاطات SVT، وكيعطيك تمارين بالحل مع إمكانية التحميل والطباعة PDF!",
+                profiles_box_title: "🎯 كيفما كانت طريقتك فالقراية، الكوتش الذكي كيمشي معاك على قد عقلك:",
+                prof_1_t: "كتفهم كثر بالتمارين والتطبيق؟",
+                prof_1_d: "كيعطيك القاعدة باختصار ويدوز معاك مباشرة لمثال محلول خطوة بخطوة مع 3 تمارين متدرجة.",
+                prof_2_t: "كتبغي اللي يعاود ليك الدرس من الصفر؟",
+                prof_2_d: "كيبني معاك لاباز من الأول بكلمات بسيطة، وكيوضح ليك كل سطر فالحساب بلا ما ينقز حتى مرحلة.",
+                prof_3_t: "عندك ذاكرة بصرية وكتفهم بالرسوم؟",
+                prof_3_d: "كيصاوب ليك جداول مقارنة، منحنيات الدوال، رسومات الفيزيك وخطاطات SVT مرقمة وواضحة.",
+                prof_4_t: "كتحفظ ولكن كتنسى دغيا نهار الفرض؟",
+                prof_4_d: "كيعطيك تقنيات باش تعقل بسهولة، النقط الذهبية اللي كتحط فالوطني وكويزات سريعة للتثبيت.",
+                comp_eyebrow: "⚖️ مقارنة واضحة",
+                comp_title: "علاش غادي تخلص السوايع فكل مادة بوحدها وكوتش واحد يقدر يجمع ليك كاع المواد 24h/24؟",
+                th_crit: "المقارنة",
+                th_trad: "❌ السوايع العاديين (Cours Particuliers)",
+                th_nova: "✅ الكوتش الذكي NOVA BAC IA",
+                row1_c: "المواد المشمولة",
+                row1_t: "أستاذ واحد لكل مادة (خاصك تخلص الماط + الفيزيك + SVT كل واحد بوحدو)",
+                row1_n: "جميع مواد الباكالوريا داخلين فحساب واحد بلا زيادة",
+                row2_c: "الوقت والتوفر",
+                row2_t: "ساعتين فالسيمانة فوقت محدد (ما كاينش معاك بالليل ملي كتوحل)",
+                row2_n: "موجود معاك 24h/24 و 7j/7 — حتى لنص الليل ليلة الامتحان",
+                row3_c: "طريقة الشرح",
+                row3_t: "طريقة وحدة كيطبقها الأستاذ على جميع التلاميذ",
+                row3_n: "كيتبرمج باستمارة التشخيص باش يشرح ليك بالطريقة اللي كتفهم بيها نتا",
+                row4_c: "الملخصات والوثائق",
+                row4_t: "نقيطات كتكتبهم بالزربة فالدفتر",
+                row4_n: "منحنيات، خطاطات الفيزيك و SVT، تسجيل فالتيليفون أو البيسي وطباعة PDF A4",
+                row5_c: "الثمن فالعام كامل",
+                row5_t: "من 12.000 حتى لـ 20.000 درهم فالعام",
+                row5_n: "199 درهم فقط للعام كامل (أقل من درهم واحد فالنهار!)",
+                parents_badge: "👨‍👩‍👧‍👦 رسالة لآباء وأولياء التلاميذ",
+                parents_title: "عييتو ما تخسرو آلاف الدراهم فالسوايع بلا ما تشوفو نتيجة؟ وخايفين على ولادكم من التكرار؟",
+                parents_p1: "كتشوف ولدك ولا بنتك مضغوط، خايف من الباك، ونتوما كتحرمو راسكم باش تخلصو ليه السوايع فكل مادة وفي الأخير النقط ما كيتبدلوش.",
+                parents_p2: "<strong>NOVA BAC IA</strong> كيعطي لولدك <strong>برنامج مراجعة يومي على 30 يوم</strong>، منهجية واضحة، وأستاذ ذكي صبور كيعاود يشرح ليه الدرس شحال ما بغى وفأي وقت — وكل هادشي بـ <strong>199 درهم للعام كامل</strong> فقط.",
+                parents_cta: "سجل ولدك أو بنتك دابا (199 درهم / العام)",
+                teachers_badge: "👨‍🏫 رسالة للأساتذة اللي كيهتمو بنجاح التلاميذ ديالهم",
+                teachers_title: "نصحو التلاميذ ديالكم بالأداة اللي غادي تكمل المجهود ديالكم ملي يرجعو للدار.",
+                teachers_p1: "كأستاذ رسالي كيهمك نجاح التلاميذ ديالك، راك عارف بلي الوقت فالقسم ما كيكفيش باش توقف مع كل تلميذ بوحدو فاش كيرجع للدار.",
+                teachers_p2: "<strong>NOVA BAC IA</strong> كيحترم الإطار المرجعي ديال الباكالوريا المغربية (خيار فرنسية وعربية) وطريقة التحرير الرسمية. ملي كتنصح بيه التلاميذ ديالك، كتعاون حتى التلاميذ اللي ما عندهمش إمكانيات السوايع باش يخدمو تمارين متدرجة، يطبعو ملخصاتهم ويجيو للقسم فاهمين ومستعدين.",
+                teachers_cta: "جرب المنصة ونصح بيها التلاميذ ديالك",
+                price_badge: "🎓 اشتراك سنوي شامل",
+                price_title: "ثمن دفتر واحد غادي ينقذ ليك العام ديال الباك كامل.",
+                price_subtitle: "بلا اشتراك شهري مخبي. كتخلص مرة وحدة وكتستافد طيلة السنة الدراسية.",
+                price_daily: "⚡ يعني 0,55 درهم فالنهار — حتى ما كاملاش درهم واحد فكل نهار قراية!",
+                p_feat_1: "تشخيص كامل + برمجة الكوتش الذكي على حساب طريقة فهمك",
+                p_feat_2: "كوتش ذكي 24h/24 فجميع المواد (بالفرنسية، العربية والدارجة)",
+                p_feat_3: "رسم المنحنيات والدوال، رسومات الفيزيك وخطاطات SVT",
+                p_feat_4: "برنامج مراجعة 30 يوم + تحميل الوثائق فجهازك وطباعة PDF A4",
+                p_feat_5: "الأداء ببطاقة بنكية (تفعيل فوري فـ 3 ثواني) أولا عبر CashPlus / WafaCash",
+                price_cta: "🚀 بدا التشخيص ديالك دابا"
+            }
+        };
+
+        function setLandingLang(lang) {
+            const dict = landingTranslations[lang] || landingTranslations.fr;
+            const root = document.getElementById('html-root');
+            if (lang === 'darija') {
+                root.setAttribute('dir', 'rtl');
+                root.setAttribute('lang', 'ar');
+                document.body.style.fontFamily = "'Cairo', 'Outfit', sans-serif";
+            } else {
+                root.setAttribute('dir', 'ltr');
+                root.setAttribute('lang', 'fr');
+                document.body.style.fontFamily = "'Outfit', sans-serif";
+            }
+
+            document.getElementById('btn-lang-fr')?.classList.toggle('active', lang === 'fr');
+            document.getElementById('btn-lang-darija')?.classList.toggle('active', lang === 'darija');
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerHTML = dict[key];
+                }
+            });
+
+            // Pré-sélectionner la langue dans le formulaire d'inscription
+            const langSelect = document.getElementById('lang');
+            if (langSelect) {
+                langSelect.value = lang === 'darija' ? 'darija' : 'fr';
+            }
         }
 
         applyTheme();

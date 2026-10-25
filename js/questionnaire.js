@@ -108,21 +108,32 @@ const questionnaire = {
         if(progress) progress.innerText = `Étape ${this.currentStep + 1} sur ${ADAPTIVE_QUIZ.length}`;
         if(bar) bar.style.width = `${((this.currentStep + 1) / ADAPTIVE_QUIZ.length) * 100}%`;
 
-        let html = `<h3 style="margin-bottom:20px; font-size:1.1rem;">${step.question}</h3>`;
+        let html = `<h3 style="margin-bottom: 25px; font-size: 1.25rem; font-weight: 700; color: var(--text-main); line-height: 1.4;">${step.question}</h3><div style="display: flex; flex-direction: column; gap: 8px;">`;
         step.options.forEach((opt, index) => {
+            const isChecked = this.answers[this.currentStep] == index;
             html += `
-                <label class="plan-day" style="cursor:pointer; display:flex; align-items:center; gap:12px; margin-bottom:10px;">
-                    <input type="radio" name="quiz-opt" value="${index}" ${this.answers[this.currentStep] == index ? 'checked' : ''}>
+                <label class="quiz-option-card ${isChecked ? 'selected' : ''}" onclick="questionnaire.selectOption(${index}, this)">
+                    <input type="radio" name="quiz-opt" value="${index}" ${isChecked ? 'checked' : ''}>
                     <span>${opt.text}</span>
                 </label>
             `;
         });
+        html += `</div>`;
         if(container) container.innerHTML = html;
 
         const prevBtn = document.getElementById('prev-step');
         const nextBtn = document.getElementById('next-step');
         if(prevBtn) prevBtn.style.display = this.currentStep === 0 ? 'none' : 'block';
         if(nextBtn) nextBtn.innerText = this.currentStep === ADAPTIVE_QUIZ.length - 1 ? "Terminer le diagnostic" : "Suivant";
+    },
+
+    selectOption(index, element) {
+        document.querySelectorAll('.quiz-option-card').forEach(c => c.classList.remove('selected'));
+        if (element) {
+            element.classList.add('selected');
+            const radio = element.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        }
     },
 
     next() {
@@ -169,7 +180,21 @@ const questionnaire = {
                 .eq('id', user.id);
 
             if (error) throw error;
-            window.location.href = 'diagnostic.html';
+
+            // Mettre à jour l'état local et basculer sur l'écran d'attente de paiement
+            if (window.auth && window.auth.profile) {
+                window.auth.profile.quiz_completed = true;
+                window.auth.profile = { ...window.auth.profile, ...results, quiz_completed: true };
+                
+                // Masquer le questionnaire
+                const qSec = document.getElementById('questionnaire');
+                if (qSec) qSec.style.display = 'none';
+                
+                // Déclencher la vue suivante (paiement)
+                window.auth.handleUserReady();
+            } else {
+                window.location.reload();
+            }
         } catch (err) {
             console.error("Save error:", err);
             alert("Erreur lors de la sauvegarde. Réessaie.");
@@ -214,11 +239,37 @@ const questionnaire = {
         });
 
         const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        const mainProfile = sorted[0][0];
+
+        // Mapping vers le profil visuel de diagnostic.html / CDC
+        const PROFILE_MAP = {
+            'anxieux_bloque': 'Stressé 🔴',
+            'architecte_visuel': 'Désorganisé 🟡',
+            'memorisateur_fragile': 'Passif 🟢',
+            'performer': 'Optimiseur 🟣',
+            'reconstructeur': 'Perdu 🔵',
+            'praticien': 'Passif 🟢',
+            'stratege_bac': 'Optimiseur 🟣'
+        };
+
+        const assignedProfile = PROFILE_MAP[mainProfile] || 'Perdu 🔵';
         
+        // Calcul des pourcentages normalisés pour l'UI du dashboard
+        const totalAnswers = this.answers.length || 8;
+        const quizScores = {
+            clarity: Math.min(100, Math.round(((scores.architecte_visuel + scores.reconstructeur) / 4) * 100)),
+            action: Math.min(100, Math.round(((scores.praticien + scores.stratege_bac) / 4) * 100)),
+            organization: Math.min(100, Math.round((dailyTime / 180) * 100)),
+            stress: Math.min(100, Math.round((stress / 6) * 100)),
+            optimization: Math.min(100, Math.round(((scores.performer + scores.stratege_bac) / 4) * 100))
+        };
+
         return {
-            main_learning_profile: sorted[0][0],
+            assigned_profile: assignedProfile,
+            main_learning_profile: mainProfile,
             secondary_learning_profile: sorted[1][0],
             profile_scores: scores,
+            quiz_scores: quizScores,
             daily_time_minutes: dailyTime,
             bac_session: bacSession,
             stress_level: Math.min(10, Math.max(0, stress)),

@@ -102,24 +102,81 @@ const auth = {
                     password: password,
                 });
                 if (error) throw error;
-                // session change listener will handle the rest
+                if (data?.user) {
+                    this.user = data.user;
+                    await this.fetchProfile();
+                    this.handleUserReady();
+                    return;
+                }
             } else {
-                // Manual SignUp flow via WhatsApp
-                const message = `Bonjour, je souhaite m'inscrire à BAC IA MAROC.\n\n*Prénom* : ${firstname}\n*WhatsApp* : ${whatsapp}\n*Email* : ${email}\n*Niveau* : ${gradeLevel}\n*Filière* : ${track}\n*Langue* : ${lang}\n\n(Veuillez ajouter votre reçu de paiement de 199 DH à ce message)`;
-                
-                const waLink = `https://wa.me/212716014148?text=${encodeURIComponent(message)}`;
-                
-                alert("Votre demande d'inscription a été préparée ! Vous allez être redirigé vers WhatsApp pour l'envoyer avec votre reçu de paiement à l'administrateur.");
-                
-                window.location.href = waLink;
-                
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Suivant';
+                // Inscription Supabase Auth réelle
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            firstname: firstname,
+                            whatsapp: whatsapp,
+                            grade_level: gradeLevel,
+                            track: track,
+                            lang: lang
+                        }
+                    }
+                });
+
+                if (authError) throw authError;
+
+                if (authData?.user) {
+                    this.user = authData.user;
+                    
+                    // Upsert profil élève
+                    const userProfile = {
+                        id: this.user.id,
+                        email: email,
+                        firstname: firstname,
+                        whatsapp: whatsapp,
+                        grade_level: gradeLevel,
+                        track: track,
+                        lang: lang,
+                        status: 'en_attente',
+                        payment_status: 'non_paye',
+                        quiz_completed: false
+                    };
+
+                    const { data: pData, error: pError } = await supabaseClient
+                        .from('profiles')
+                        .upsert([userProfile])
+                        .select()
+                        .single();
+
+                    this.profile = pData || userProfile;
+                    this.handleUserReady();
+                } else {
+                    alert("Compte créé ! Veuillez vérifier votre boîte email pour valider votre inscription si une confirmation est requise.");
+                }
             }
         } catch (error) {
+            // Si le compte a déjà été créé ou si Supabase bloque sur l'envoi d'email de confirmation
+            if (!isLogin && (error.message.includes('rate limit') || error.message.includes('already registered'))) {
+                try {
+                    const { data: logData, error: logError } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    if (!logError && logData?.user) {
+                        this.user = logData.user;
+                        await this.fetchProfile();
+                        this.handleUserReady();
+                        return;
+                    }
+                } catch(e) {
+                    console.warn("Auto-login failed:", e);
+                }
+            }
+
             alert('Erreur: ' + error.message);
             submitBtn.disabled = false;
-            submitBtn.innerText = isLogin ? 'Se connecter' : 'Suivant';
+            submitBtn.innerText = isLogin ? 'Se connecter' : 'Créer mon compte';
         }
     },
 
@@ -128,7 +185,7 @@ const auth = {
             const { error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                redirectTo: `${window.location.origin}/`
+                    redirectTo: `${window.location.origin}/`
                 }
             });
             if (error) throw error;
@@ -144,18 +201,72 @@ const auth = {
         this.landingSection.style.display = 'none';
         this.featuresSection.style.display = 'none';
         
-        if (this.profile.status === 'valide' || this.profile.role === 'admin') {
-            // Si c'est un admin ou qu'il a déjà fait le quiz, on l'envoie au diagnostic
-            if (!this.profile.quiz_completed && this.profile.role !== 'admin') {
-                this.questionnaireSection.style.display = 'block';
-                if (typeof quiz !== 'undefined') quiz.init();
-            } else {
-                window.location.href = 'diagnostic.html';
-            }
-        } else {
-            document.getElementById('payment').style.display = 'block';
+        // 1. Si rôle admin -> aller directement sur admin.html ou laisser choisir
+        if (this.profile.role === 'admin') {
+            window.location.href = 'admin.html';
+            return;
         }
+
+        // 2. Si l'élève n'a pas encore complété son diagnostic -> afficher le questionnaire
+        if (!this.profile.quiz_completed) {
+            this.questionnaireSection.style.display = 'block';
+            if (typeof questionnaire !== 'undefined') {
+                questionnaire.init();
+            }
+            return;
+        }
+
+        // 3. Si le diagnostic est complété mais le compte est en attente -> afficher la page paiement
+        if (this.profile.status !== 'valide') {
+            const paymentSection = document.getElementById('payment');
+            if (paymentSection) {
+                paymentSection.style.display = 'block';
+                
+                // Personnaliser le message WhatsApp avec les infos de l'élève
+                const waBtn = paymentSection.querySelector('a[href*="wa.me"]');
+                if (waBtn) {
+                    const refMsg = `Bonjour, voici ma preuve de paiement (199 DH) pour BAC IA MAROC.\n\n*Élève* : ${this.profile.firstname || ''}\n*Email* : ${this.profile.email || ''}\n*Tél/WhatsApp* : ${this.profile.whatsapp || ''}\n*Filière* : ${this.profile.track || 'Sciences'}`;
+                    waBtn.href = `https://wa.me/212716014148?text=${encodeURIComponent(refMsg)}`;
+                }
+
+                // Personnaliser le lien Stripe avec client_reference_id = profile.id
+                const stripeBtn = document.getElementById('stripe-pay-btn');
+                if (stripeBtn) {
+                    const baseStripeUrl = 'https://buy.stripe.com/00w3cv6ci5kz5Jx5uKgbm0w';
+                    const emailParam = this.profile.email ? `&prefilled_email=${encodeURIComponent(this.profile.email)}` : '';
+                    stripeBtn.href = `${baseStripeUrl}?client_reference_id=${encodeURIComponent(this.profile.id)}${emailParam}`;
+                }
+
+                // Scroll automatique vers la section de paiement pour une visibilité immédiate
+                paymentSection.scrollIntoView({ behavior: 'smooth' });
+
+                // Écoute en direct (Realtime) du déblocage dès paiement Stripe
+                if (!this.realtimeSubscribed) {
+                    this.realtimeSubscribed = true;
+                    supabaseClient
+                        .channel('public:profiles:' + this.profile.id)
+                        .on('postgres_changes', { 
+                            event: 'UPDATE', 
+                            schema: 'public', 
+                            table: 'profiles', 
+                            filter: `id=eq.${this.profile.id}` 
+                        }, (payload) => {
+                            if (payload.new && payload.new.status === 'valide') {
+                                this.profile = payload.new;
+                                alert("🎉 Félicitations ! Ton paiement de 199 DH est validé. Ton accès complet est ouvert !");
+                                window.location.href = 'diagnostic.html';
+                            }
+                        })
+                        .subscribe();
+                }
+            }
+            return;
+        }
+
+        // 4. Si validé et quiz complété -> vers le dashboard
+        window.location.href = 'diagnostic.html';
     }
 };
 
+window.auth = auth;
 document.addEventListener('DOMContentLoaded', () => auth.init());

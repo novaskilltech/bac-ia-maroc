@@ -218,7 +218,11 @@
         async function validateUser(id) {
             const { error } = await supabaseClient
                 .from('profiles')
-                .update({ status: 'valide', payment_status: 'paiement_valide' })
+                .update({ 
+                    status: 'valide', 
+                    payment_status: 'paiement_valide',
+                    validated_at: new Date().toISOString()
+                })
                 .eq('id', id);
 
             if (error) {
