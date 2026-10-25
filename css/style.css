@@ -745,22 +745,130 @@ aside {
 }
 
 /* =========================================================================
-   LANDING PAGE & DASHBOARD — ADAPTATION PARFAITE SOMBRE / CLAIR SOBRE
+   LANDING PAGE & DASHBOARD — ADAPTATION PARFAITE SOMBRE / CLAIR SOBRE & MOBILE
    ========================================================================= */
 
 .lp-header {
-    padding: 18px 5%;
+    padding: 16px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 14px;
     border-bottom: 1px solid var(--glass-border);
     background: var(--card-bg);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     position: sticky;
     top: 0;
     z-index: 900;
+}
+
+.lp-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lp-logo-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+    flex-shrink: 0;
+}
+
+.lp-brand-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: block;
+    line-height: 1.1;
+}
+
+.lp-brand-sub {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.lp-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lp-header-btns {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lp-theme-btn {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+}
+
+.lp-login-btn {
+    padding: 10px 18px;
+    font-size: 0.85rem;
+}
+
+.lp-cta-btn {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+}
+
+.hero {
+    padding: 50px 0 60px;
+}
+
+.hero-main-title {
+    font-size: clamp(2.1rem, 4.2vw, 3.3rem);
+    line-height: 1.15;
+    margin-bottom: 18px;
+}
+
+.hero-main-desc {
+    font-size: 1.12rem;
+    line-height: 1.7;
+    margin-top: 18px;
+    margin-bottom: 22px;
+}
+
+.hero-bullets {
+    display: grid;
+    gap: 12px;
+    margin: 22px 0;
+    font-size: 0.95rem;
+    text-align: start;
+}
+
+.hero-bullet-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+}
+
+.cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 26px;
+}
+
+.hero-btn-main {
+    padding: 16px 32px;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.hero-btn-sec {
+    padding: 16px 26px;
+    font-size: 1rem;
 }
 
 .lp-alt-section {
@@ -775,6 +883,38 @@ aside {
     border-radius: 32px;
     padding: 28px;
     box-shadow: var(--neon-shadow);
+}
+
+.hero-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--glass-border);
+    text-align: start;
+}
+
+.hero-preview-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 1px solid var(--primary);
+    flex-shrink: 0;
+}
+
+.hero-preview-title {
+    font-weight: 800;
+    font-size: 1.1rem;
+    line-height: 1.25;
+}
+
+.hero-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
 }
 
 .profiles-showcase-box {
@@ -830,6 +970,7 @@ aside {
     cursor: pointer;
     transition: all 0.25s ease;
     font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
 }
 
 .lang-switch-btn.active {
@@ -839,18 +980,24 @@ aside {
 }
 
 .urgency-banner {
-    background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.1) 50%, rgba(2, 132, 199, 0.1) 100%);
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.12) 0%, rgba(245, 158, 11, 0.12) 50%, rgba(2, 132, 199, 0.12) 100%);
     border-bottom: 1px solid var(--glass-border);
     text-align: center;
     padding: 10px 16px;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 600;
     color: var(--text-main);
+    line-height: 1.45;
 }
 
 .lp-section {
     padding: 75px 0;
     position: relative;
+}
+
+.pricing-section {
+    padding-top: 30px;
+    padding-bottom: 90px;
 }
 
 .lp-section-header {
@@ -866,30 +1013,31 @@ aside {
     font-size: 0.78rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     background: rgba(2, 132, 199, 0.1);
     border: 1px solid rgba(2, 132, 199, 0.3);
     color: var(--primary);
     margin-bottom: 14px;
+    max-width: 100%;
 }
 
 .lp-title {
-    font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+    font-size: clamp(1.7rem, 3.5vw, 2.75rem);
     font-weight: 800;
-    line-height: 1.2;
+    line-height: 1.22;
     margin-bottom: 16px;
     color: var(--text-main);
 }
 
 .lp-subtitle {
-    font-size: 1.08rem;
+    font-size: 1.06rem;
     color: var(--text-dim);
     line-height: 1.65;
 }
 
 .pain-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
 }
 
@@ -909,7 +1057,7 @@ aside {
 }
 
 .pain-number {
-    font-size: 2.3rem;
+    font-size: 2.2rem;
     font-weight: 800;
     color: #dc2626;
     margin-bottom: 10px;
@@ -918,6 +1066,7 @@ aside {
 
 .vs-table-wrap {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-radius: 24px;
     border: 1.5px solid var(--glass-border);
     background: var(--card-bg);
@@ -934,6 +1083,7 @@ aside {
 .vs-table th, .vs-table td {
     padding: 18px 22px;
     border-bottom: 1px solid var(--glass-border);
+    vertical-align: middle;
 }
 
 .vs-table th {
@@ -951,7 +1101,7 @@ aside {
 
 .profile-pill-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 18px;
 }
 
@@ -971,7 +1121,7 @@ aside {
 
 .audience-split {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 28px;
 }
 
@@ -998,14 +1148,53 @@ aside {
     position: relative;
 }
 
-[dir="rtl"] .vs-table {
-    text-align: right;
+.pricing-card-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    line-height: 1.2;
 }
 
-/* Contraste des menus déroulants et tableaux markdown en mode clair */
-select option, select optgroup {
-    background: var(--modal-bg);
-    color: var(--text-main);
+.pricing-amount {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1.05;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pricing-features-list {
+    text-align: start;
+    max-width: 480px;
+    margin: 28px auto;
+    display: grid;
+    gap: 12px;
+    font-size: 0.95rem;
+}
+
+.pricing-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.45;
+}
+
+.pricing-cta-btn {
+    width: 100%;
+    max-width: 440px;
+    padding: 18px 30px;
+    font-size: 1.12rem;
+    font-weight: 800;
+}
+
+/* Barre fixe bas d'écran mobile (masquée sur ordinateur) */
+.mobile-sticky-cta {
+    display: none;
+}
+
+[dir="rtl"] .vs-table {
+    text-align: right;
 }
 
 .msg-content-body table {
@@ -1023,6 +1212,402 @@ select option, select optgroup {
 .msg-content-body th {
     background: var(--input-bg);
     font-weight: 700;
+}
+
+/* =========================================================================
+   RESPONSIVE MOBILE & TABLETTE (OPTIMISATION ERGONOMIQUE TACTILE)
+   ========================================================================= */
+
+@media (max-width: 992px) {
+    .hero-wrapper {
+        flex-direction: column;
+        text-align: center;
+        gap: 32px;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto;
+    }
+
+    .cta-group {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    /* Bandeau supérieur compact sur mobile */
+    .urgency-banner {
+        font-size: 0.76rem;
+        padding: 8px 12px;
+        line-height: 1.35;
+    }
+
+    /* Header Mobile en 2 lignes nettes et aérées */
+    .lp-header {
+        padding: 10px 14px;
+        gap: 10px;
+    }
+
+    .lp-logo-img {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    .lp-brand-title {
+        font-size: 1.08rem;
+    }
+
+    .lp-brand-sub {
+        font-size: 0.58rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 185px;
+    }
+
+    .lp-header-actions {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .lang-switch-bar {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .lang-switch-btn {
+        flex: 1;
+        padding: 6px 10px;
+        font-size: 0.76rem;
+        text-align: center;
+    }
+
+    .lp-header-btns {
+        gap: 6px;
+    }
+
+    .lp-theme-btn {
+        padding: 8px 11px;
+        font-size: 0.82rem;
+        border-radius: 11px;
+    }
+
+    .lp-login-btn {
+        padding: 8px 12px;
+        font-size: 0.78rem;
+        border-radius: 11px;
+        white-space: nowrap;
+    }
+
+    /* Le bouton Diagnostic est déjà dans le Hero et dans la barre fixe du bas sur mobile */
+    .lp-cta-btn {
+        display: none;
+    }
+
+    /* Hero Mobile */
+    .hero {
+        padding: 26px 0 38px !important;
+    }
+
+    .lp-eyebrow {
+        font-size: 0.68rem;
+        padding: 5px 12px;
+        letter-spacing: 0.4px;
+        line-height: 1.35;
+    }
+
+    .hero-main-title {
+        font-size: 1.68rem !important;
+        line-height: 1.22 !important;
+        margin-bottom: 14px;
+    }
+
+    .hero-main-desc {
+        font-size: 0.96rem !important;
+        line-height: 1.58 !important;
+        margin-top: 10px;
+        margin-bottom: 18px;
+    }
+
+    .hero-bullets {
+        font-size: 0.88rem;
+        gap: 10px;
+        margin: 16px 0;
+        background: var(--card-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 18px;
+        padding: 16px 14px;
+    }
+
+    .cta-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .hero-btn-main,
+    .hero-btn-sec {
+        width: 100%;
+        padding: 15px 20px;
+        font-size: 0.98rem;
+    }
+
+    .price-tag {
+        font-size: 0.82rem !important;
+        line-height: 1.45;
+    }
+
+    /* Carte d'aperçu Hero sur mobile */
+    .hero-preview-card {
+        padding: 18px 16px;
+        border-radius: 22px;
+    }
+
+    .hero-preview-header {
+        gap: 10px;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+    }
+
+    .hero-preview-logo {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+    }
+
+    .hero-preview-title {
+        font-size: 0.95rem;
+    }
+
+    .hero-stats-grid {
+        gap: 6px;
+    }
+
+    /* Sections & Grilles sur mobile (1 seule colonne, zéro débordement) */
+    .lp-section {
+        padding: 44px 0;
+    }
+
+    .pricing-section {
+        padding-top: 24px;
+        padding-bottom: 105px; /* Espace pour la barre sticky mobile */
+    }
+
+    .lp-section-header {
+        margin-bottom: 28px;
+    }
+
+    .lp-title {
+        font-size: 1.48rem;
+        line-height: 1.25;
+    }
+
+    .lp-subtitle {
+        font-size: 0.94rem;
+        line-height: 1.55;
+    }
+
+    .features .grid,
+    .pain-grid,
+    .profile-pill-grid,
+    .audience-split {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .card,
+    .pain-card,
+    .audience-box {
+        padding: 22px 18px;
+        border-radius: 20px;
+    }
+
+    .card i {
+        font-size: 2rem;
+        margin-bottom: 14px;
+    }
+
+    .card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .pain-number {
+        font-size: 1.85rem;
+    }
+
+    .profiles-showcase-box {
+        padding: 22px 16px;
+        border-radius: 22px;
+    }
+
+    .profiles-showcase-box h3 {
+        font-size: 1.15rem !important;
+        margin-bottom: 18px !important;
+    }
+
+    .profile-showcase-card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .audience-box h3 {
+        font-size: 1.32rem !important;
+        line-height: 1.3;
+    }
+
+    /* Tableau comparatif adapté à l'écran mobile sans défilement pénible */
+    .vs-table-wrap {
+        border-radius: 18px;
+    }
+
+    .vs-table th,
+    .vs-table td {
+        padding: 12px 10px;
+        font-size: 0.8rem;
+        line-height: 1.38;
+    }
+
+    .vs-table th {
+        font-size: 0.82rem;
+    }
+
+    /* Carte Tarif Unique sur mobile */
+    .pricing-mega-card {
+        padding: 28px 18px;
+        border-radius: 24px;
+    }
+
+    .pricing-card-title {
+        font-size: 1.48rem;
+    }
+
+    .pricing-amount {
+        font-size: 2.9rem;
+    }
+
+    .pricing-features-list {
+        font-size: 0.88rem;
+        gap: 10px;
+        margin: 20px auto;
+    }
+
+    .pricing-cta-btn {
+        padding: 16px 20px;
+        font-size: 0.98rem;
+    }
+
+    /* Modale d'inscription, Questionnaire & Paiement sur mobile */
+    .modal-overlay {
+        padding: 12px;
+        align-items: flex-end;
+    }
+
+    .modal {
+        padding: 22px 18px;
+        border-radius: 22px;
+        max-height: 92vh;
+    }
+
+    #questionnaire .glass,
+    #payment .glass {
+        padding: 24px 16px !important;
+        border-radius: 20px !important;
+    }
+
+    #quiz-title {
+        font-size: 1.4rem !important;
+    }
+
+    .quiz-option-card {
+        padding: 13px 14px;
+        gap: 12px;
+        border-radius: 14px;
+    }
+
+    .quiz-option-card span {
+        font-size: 0.92rem;
+    }
+
+    /* Masquer le bouton thème flottant sur mobile (déjà présent dans le header) */
+    #theme-toggle {
+        display: none !important;
+    }
+
+    /* Barre d'action fixe en bas sur Mobile */
+    .mobile-sticky-cta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+        background: var(--modal-bg);
+        border-top: 1.5px solid var(--glass-border);
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.25);
+        z-index: 880;
+    }
+
+    .mobile-sticky-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+    }
+
+    .mobile-sticky-price {
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: var(--primary);
+    }
+
+    .mobile-sticky-sub {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #10b981;
+    }
+
+    .mobile-sticky-btn {
+        padding: 12px 20px;
+        font-size: 0.88rem;
+        font-weight: 800;
+        border-radius: 12px;
+        white-space: nowrap;
+        flex: 1;
+        max-width: 230px;
+    }
+}
+
+@media (max-width: 390px) {
+    .lp-brand-sub {
+        display: none;
+    }
+
+    .lang-switch-btn {
+        font-size: 0.72rem;
+        padding: 6px 8px;
+    }
+
+    .hero-main-title {
+        font-size: 1.5rem !important;
+    }
+
+    .vs-table th,
+    .vs-table td {
+        padding: 10px 7px;
+        font-size: 0.75rem;
+    }
 }
 
 

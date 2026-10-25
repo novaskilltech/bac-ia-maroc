@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=12">
+    <link rel="stylesheet" href="css/style.css?v=13">
 </head>
 <body>
 
@@ -57,15 +57,15 @@
 
     <!-- Top Brand Header + Language Switcher (Français / Darija) -->
     <header class="lp-header">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="assets/logo-nova-bac-ia.svg" alt="NOVA BAC IA" style="width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);">
+        <div class="lp-header-brand">
+            <img src="assets/logo-nova-bac-ia.svg" alt="NOVA BAC IA" class="lp-logo-img">
             <div>
-                <span style="font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px;">NOVA BAC <span style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">IA</span></span>
-                <div style="font-size: 0.68rem; color: var(--text-dim); font-weight: 600;" data-i18n="brand_sub">COACH BAC MAROC 24H/24 • TOUTES MATIÈRES</div>
+                <span class="lp-brand-title">NOVA BAC <span style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">IA</span></span>
+                <div class="lp-brand-sub" data-i18n="brand_sub">COACH BAC MAROC 24H/24 • TOUTES MATIÈRES</div>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div class="lp-header-actions">
             <!-- Switch Français / Darija Marocaine -->
             <div class="lang-switch-bar" role="group" aria-label="Choisir la langue">
                 <button type="button" id="btn-lang-fr" class="lang-switch-btn active" onclick="setLandingLang('fr')">
@@ -76,56 +76,58 @@
                 </button>
             </div>
 
-            <button type="button" onclick="toggleTheme()" class="btn btn-secondary" style="padding: 10px 14px; font-size: 0.9rem;" title="Mode Clair / Mode Sombre">
-                <i id="header-theme-icon" class="fa-solid fa-moon"></i>
-            </button>
+            <div class="lp-header-btns">
+                <button type="button" onclick="toggleTheme()" class="btn btn-secondary lp-theme-btn" title="Mode Clair / Mode Sombre">
+                    <i id="header-theme-icon" class="fa-solid fa-moon"></i>
+                </button>
 
-            <button type="button" class="btn btn-secondary open-login-btn" style="padding: 10px 18px; font-size: 0.85rem;" data-i18n="nav_login">
-                Se connecter
-            </button>
-            <button type="button" class="btn btn-primary open-auth-btn" style="padding: 10px 20px; font-size: 0.85rem;" data-i18n="nav_cta">
-                Faire mon Diagnostic
-            </button>
+                <button type="button" class="btn btn-secondary open-login-btn lp-login-btn" data-i18n="nav_login">
+                    Se connecter
+                </button>
+                <button type="button" class="btn btn-primary open-auth-btn lp-cta-btn" data-i18n="nav_cta">
+                    Faire mon Diagnostic
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- =====================================================================
          SECTION 1 : HERO — L'URGENCE DU POINT QUI CHANGE TOUTE UNE VIE
          ===================================================================== -->
-    <section id="landing" class="hero" style="padding-top: 50px; padding-bottom: 60px;">
+    <section id="landing" class="hero">
         <div class="container hero-wrapper">
             <div class="hero-content">
                 <div class="lp-eyebrow animate" data-i18n="hero_badge">
                     🔥 LE 1er COACH IA SUR-MESURE POUR LE BAC AU MAROC
                 </div>
-                <h1 class="animate" style="animation-delay: 0.1s; font-size: clamp(2.1rem, 4.2vw, 3.3rem); line-height: 1.15;" data-i18n="hero_title">
+                <h1 class="animate hero-main-title" style="animation-delay: 0.1s;" data-i18n="hero_title">
                     Il manque parfois <span style="color: var(--primary);">1 seul point</span> pour avoir le Bac. Ne laisse pas ton avenir se jouer à un détail.
                 </h1>
-                <p class="animate" style="animation-delay: 0.2s; font-size: 1.12rem; line-height: 1.7; margin-top: 18px;" data-i18n="hero_desc">
+                <p class="animate hero-main-desc" style="animation-delay: 0.2s;" data-i18n="hero_desc">
                     Tout le monde n'a pas les moyens de payer <strong>2 000 DH par mois</strong> en cours particuliers pour chaque matière. Avec <strong>NOVA BAC IA</strong>, tu as ton propre professeur particulier d'élite <strong>disponible 24h/24 et 7j/7 dans TOUTES les matières</strong>, calibré exactement sur la façon dont <strong>TON cerveau</strong> comprend les cours.
                 </p>
 
                 <!-- Points clés rapides -->
-                <div class="animate" style="animation-delay: 0.25s; display: grid; gap: 10px; margin: 22px 0; font-size: 0.95rem;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                <div class="animate hero-bullets" style="animation-delay: 0.25s;">
+                    <div class="hero-bullet-item">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981; flex-shrink: 0; margin-top: 3px;"></i>
                         <span data-i18n="hero_b1"><strong>Toutes les matières en illimité 24h/24</strong> (Maths, Physique-Chimie, SVT, Courbes, Schémas & Fiches PDF)</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                    <div class="hero-bullet-item">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981; flex-shrink: 0; margin-top: 3px;"></i>
                         <span data-i18n="hero_b2"><strong>Réglé selon TON profil cognitif</strong> grâce au questionnaire de calibrage initial</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                    <div class="hero-bullet-item">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981; flex-shrink: 0; margin-top: 3px;"></i>
                         <span data-i18n="hero_b3"><strong>199 DH pour TOUTE L'ANNÉE</strong> — Soit moins de <strong>1 Dirham par jour d'école !</strong></span>
                     </div>
                 </div>
 
-                <div class="cta-group animate" style="animation-delay: 0.3s; display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px;">
-                    <a href="#" class="btn btn-primary" id="start-btn" style="padding: 16px 32px; font-size: 1.05rem; font-weight: 800;" data-i18n="hero_cta_main">
+                <div class="cta-group animate" style="animation-delay: 0.3s;">
+                    <a href="#" class="btn btn-primary hero-btn-main" id="start-btn" data-i18n="hero_cta_main">
                         🚀 Régler mon Coach IA maintenant
                     </a>
-                    <a href="#how-it-works" class="btn btn-secondary" style="padding: 16px 26px; font-size: 1rem;" data-i18n="hero_cta_sec">
+                    <a href="#how-it-works" class="btn btn-secondary hero-btn-sec" data-i18n="hero_cta_sec">
                         Voir comment ça marche
                     </a>
                 </div>
@@ -136,15 +138,15 @@
 
             <div class="hero-image animate" style="animation-delay: 0.4s; position: relative;">
                 <div class="hero-preview-card">
-                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--glass-border);">
-                        <img src="assets/logo-nova-bac-ia.jpg" alt="Logo NOVA BAC IA" style="width: 64px; height: 64px; border-radius: 16px; object-fit: cover; border: 1px solid var(--primary);">
+                    <div class="hero-preview-header">
+                        <img src="assets/logo-nova-bac-ia.jpg" alt="Logo NOVA BAC IA" class="hero-preview-logo">
                         <div>
-                            <div style="font-weight: 800; font-size: 1.15rem;" data-i18n="card_preview_title">Coach NOVA BAC IA — En Direct 24h/24</div>
+                            <div class="hero-preview-title" data-i18n="card_preview_title">Coach NOVA BAC IA — En Direct 24h/24</div>
                             <div style="color: #10b981; font-size: 0.8rem; font-weight: 700;" data-i18n="card_preview_status">● Prêt à t'expliquer en Français, Arabe ou Darija</div>
                         </div>
                     </div>
                     <img src="assets/bac_ia_maroc_hero.png" alt="Étudiant NOVA BAC IA" style="width: 100%; border-radius: 20px; margin-bottom: 18px; border: 1px solid var(--glass-border);">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
+                    <div class="hero-stats-grid">
                         <div style="background: rgba(6,182,212,0.1); padding: 12px 8px; border-radius: 14px; border: 1px solid rgba(6,182,212,0.25);">
                             <div style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">24h/24</div>
                             <div style="font-size: 0.72rem; color: var(--text-dim);" data-i18n="stat_1">Même à 2h du matin</div>
@@ -391,13 +393,13 @@
         <!-- =================================================================
              SECTION 6 : TARIF UNIQUE — MOINS DE 1 DH PAR JOUR D'ÉCOLE
              ================================================================= -->
-        <section class="lp-section" style="padding-top: 30px; padding-bottom: 90px;">
+        <section class="lp-section pricing-section">
             <div class="container">
                 <div class="pricing-mega-card">
                     <span class="lp-eyebrow" style="background: rgba(16,185,129,0.15); color: #10b981; border-color: rgba(16,185,129,0.4);" data-i18n="price_badge">
                         🎓 ABONNEMENT ANNUEL TOUT COMPRIS
                     </span>
-                    <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 10px;" data-i18n="price_title">
+                    <h2 class="pricing-card-title" data-i18n="price_title">
                         Le prix d'un seul cahier pour sauver toute ton année du Bac.
                     </h2>
                     <p style="color: var(--text-dim); margin-bottom: 24px;" data-i18n="price_subtitle">
@@ -405,7 +407,7 @@
                     </p>
 
                     <div style="margin: 24px 0;">
-                        <div style="font-size: 4rem; font-weight: 800; line-height: 1; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        <div class="pricing-amount">
                             199 DH <span style="font-size: 1.3rem; color: var(--text-dim); -webkit-text-fill-color: var(--text-dim);">/ an</span>
                         </div>
                         <div style="margin-top: 10px; font-size: 1.05rem; font-weight: 700; color: #10b981;" data-i18n="price_daily">
@@ -413,35 +415,46 @@
                         </div>
                     </div>
 
-                    <div style="text-align: left; max-width: 480px; margin: 28px auto; display: grid; gap: 12px; font-size: 0.95rem;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                    <div class="pricing-features-list">
+                        <div class="pricing-feature-item">
+                            <i class="fa-solid fa-check" style="color: #10b981; flex-shrink: 0; margin-top: 4px;"></i>
                             <span data-i18n="p_feat_1">Diagnostic cognitif complet + Réglage personnalisé de l'IA</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                        <div class="pricing-feature-item">
+                            <i class="fa-solid fa-check" style="color: #10b981; flex-shrink: 0; margin-top: 4px;"></i>
                             <span data-i18n="p_feat_2">Coach IA illimité 24h/24 dans toutes les matières (Français, Arabe, Darija)</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                        <div class="pricing-feature-item">
+                            <i class="fa-solid fa-check" style="color: #10b981; flex-shrink: 0; margin-top: 4px;"></i>
                             <span data-i18n="p_feat_3">Studio Visuel : Courbes Maths, Dessins Physique-Chimie & Planches SVT</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                        <div class="pricing-feature-item">
+                            <i class="fa-solid fa-check" style="color: #10b981; flex-shrink: 0; margin-top: 4px;"></i>
                             <span data-i18n="p_feat_4">Planning de révision 30 jours + Téléchargement & Impression PDF A4</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-check" style="color: #10b981;"></i>
+                        <div class="pricing-feature-item">
+                            <i class="fa-solid fa-check" style="color: #10b981; flex-shrink: 0; margin-top: 4px;"></i>
                             <span data-i18n="p_feat_5">Paiement facile par Carte Bancaire (déblocage 3s) ou CashPlus / WafaCash</span>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-primary open-auth-btn" style="width: 100%; max-width: 440px; padding: 18px 30px; font-size: 1.12rem; font-weight: 800;" data-i18n="price_cta">
+                    <button type="button" class="btn btn-primary open-auth-btn pricing-cta-btn" data-i18n="price_cta">
                         🚀 Commencer mon Diagnostic maintenant
                     </button>
                 </div>
             </div>
         </section>
+
+        <!-- Barre d'action fixe en bas sur Mobile uniquement -->
+        <div class="mobile-sticky-cta">
+            <div class="mobile-sticky-info">
+                <span class="mobile-sticky-price">199 DH / an</span>
+                <span class="mobile-sticky-sub" data-i18n="stat_3">&lt; 1 DH / jour</span>
+            </div>
+            <button type="button" class="btn btn-primary open-auth-btn mobile-sticky-btn" data-i18n="nav_cta">
+                Faire mon Diagnostic
+            </button>
+        </div>
 
     </div>
 
