@@ -169,11 +169,14 @@
                             <!-- Barre de raccourcis pédagogiques rapides -->
                             <div id="prompts-list" class="prompts-scroll-row"></div>
 
-                            <!-- Barre d'outils Studio Graphique & Schémas Scientifiques -->
+                            <!-- Barre d'outils Studio Graphique, Vision & Schémas Scientifiques -->
                             <div class="visual-studio-bar">
                                 <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
-                                    <i class="fa-solid fa-compass-drafting" style="color: var(--primary);"></i> Studio Visuel :
+                                    <i class="fa-solid fa-compass-drafting" style="color: var(--primary);"></i> Studio IA :
                                 </span>
+                                <button type="button" class="visual-tool-pill" onclick="aiTutor.triggerImagePicker()" style="border-color: rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.1);">
+                                    <i class="fa-solid fa-camera" style="color: #10b981;"></i> Photo Exercice
+                                </button>
                                 <button type="button" class="visual-tool-pill" onclick="aiTutor.requestVisual('mathplot')">
                                     <i class="fa-solid fa-chart-line" style="color: #06b6d4;"></i> Courbe f(x)
                                 </button>
@@ -190,9 +193,21 @@
                                 <!-- Messages appear here -->
                             </div>
 
-                            <!-- Zone de saisie ergonomique -->
+                            <!-- Barre d'aperçu photo d'exercice avant envoi (Multimodal Vision P2) -->
+                            <div id="chat-image-preview-bar" style="display: none; justify-content: space-between; align-items: center; padding: 10px 14px; margin-bottom: 8px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 12px;"></div>
+
+                            <!-- Input fichier caché pour Caméra / Galerie -->
+                            <input type="file" id="ai-image-input" accept="image/*" style="display: none;" onchange="aiTutor.handleImageUpload(event)">
+
+                            <!-- Zone de saisie ergonomique (Texte + Caméra + Micro + Envoi) -->
                             <div class="chat-input-bar">
-                                <input type="text" id="ai-input-main" placeholder="Pose ta question, demande une courbe f(x), un schéma ou un exercice..." 
+                                <button type="button" onclick="aiTutor.triggerImagePicker()" class="msg-action-btn chat-media-btn" title="Photographier ou envoyer un exercice / brouillon">
+                                    <i class="fa-solid fa-camera" style="color: var(--primary);"></i>
+                                </button>
+                                <button type="button" id="chat-voice-btn" onclick="aiTutor.toggleVoiceInput()" class="msg-action-btn chat-media-btn" title="Dicter ma question à la voix (FR / AR / Darija)">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                                <input type="text" id="ai-input-main" placeholder="Pose ta question, envoie une photo 📷 ou dicte au micro 🎙️..." 
                                        class="chat-input-field">
                                 <button onclick="sendChatMessage()" class="btn btn-primary chat-send-btn">
                                     <span class="send-btn-label">Envoyer</span> <i class="fa-solid fa-paper-plane"></i>
@@ -575,7 +590,7 @@
         function sendChatMessage() {
             const input = document.getElementById('ai-input-main');
             const text = input.value.trim();
-            if (text) {
+            if (text || aiTutor.pendingImageDataUrl) {
                 aiTutor.sendMessageFromMain(text);
                 input.value = '';
             }

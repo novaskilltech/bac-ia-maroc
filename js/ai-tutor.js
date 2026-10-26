@@ -5,6 +5,10 @@ const aiTutor = {
     currentCourse: null,
     currentSubject: null,
     savedDocuments: [],
+    pendingImageDataUrl: null,
+    pendingImageName: null,
+    isListeningVoice: false,
+    recognitionInstance: null,
 
     init(profile) {
         this.userProfile = profile;
@@ -70,11 +74,12 @@ const aiTutor = {
         if (container) {
             container.innerHTML = '';
             this.currentMessages = [];
-            this.addMessageToMain('ai', `Bonjour **${this.userProfile.firstname || 'Élève'}** ! 🎓\n\nJe suis ton tuteur IA spécialisé pour le **Bac Sciences Maroc** (propulsé par **Gemini 2.5**).\n\nVoici comment travailler efficacement ensemble :\n1. **Sélectionne un chapitre** dans la bibliothèque à gauche ou clique sur une tâche de ton **Planning du jour**.\n2. Demande-moi un **résumé structuré**, **3 exercices progressifs** ou un **Quiz type Bac National**.\n3. Utilise les boutons sous mes réponses pour **Copier**, **Garder sur ton appareil**, **Télécharger**, ou **Imprimer en PDF** !`);
+            this.addMessageToMain('ai', `Bonjour **${this.userProfile.firstname || 'Élève'}** ! 🎓\n\nJe suis ton tuteur IA spécialisé pour le **Bac Sciences Maroc** (propulsé par **Gemini 2.5 Vision & Voix**).\n\nVoici comment travailler efficacement ensemble :\n1. **Sélectionne un chapitre** dans la bibliothèque ou clique sur une tâche de ton **Planning du jour**.\n2. **Nouveau (Photo & Voix)** : Clique sur 📷 **Photo Exercice** pour photographier ton cahier/sujet de Bac, ou sur 🎙️ **Micro** pour dicter ta question !\n3. Utilise les boutons sous mes réponses pour **Copier**, **Garder sur ton appareil**, **Télécharger**, ou **Imprimer en PDF** !`);
         }
     },
 
-    async callGeminiAPI(promptText) {
+    async callGeminiAPI(promptText, options = {}) {
+        const { imageDataUrl = null, jsonMode = false } = options;
         const user = this.userProfile || {};
         const langMap = {
             'fr': 'Français',
@@ -123,7 +128,9 @@ const aiTutor = {
                     prompt: promptText,
                     systemPrompt: systemPrompt,
                     messages: messagesPayload,
-                    temperature: 0.7,
+                    imageDataUrl: imageDataUrl,
+                    jsonMode: jsonMode,
+                    temperature: jsonMode ? 0.4 : 0.7,
                     max_tokens: 4000
                 })
             });
@@ -146,7 +153,9 @@ const aiTutor = {
                     body: {
                         prompt: promptText,
                         systemPrompt: systemPrompt,
-                        messages: messagesPayload
+                        messages: messagesPayload,
+                        imageDataUrl: imageDataUrl,
+                        jsonMode: jsonMode
                     }
                 });
                 if (!error && data?.text) {
@@ -176,9 +185,12 @@ const aiTutor = {
         // 4. Nettoyer la réponse pour l'élève
         const cleanResponse = this.cleanAIResponse(rawResponse);
 
-        // Add to history state
-        this.currentMessages.push({ role: 'user', content: promptText });
-        this.currentMessages.push({ role: 'assistant', content: cleanResponse });
+        // Add to history state (sans stocker le base64 lourd en historique)
+        if (!jsonMode) {
+            const storedUserText = imageDataUrl ? `[📷 Photo d'exercice jointe] ${promptText}` : promptText;
+            this.currentMessages.push({ role: 'user', content: storedUserText });
+            this.currentMessages.push({ role: 'assistant', content: cleanResponse });
+        }
 
         return cleanResponse;
     },
@@ -447,27 +459,180 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les formules 
         }
     },
 
-    async sendMessageFromMain(text) {
-        const lowerText = text.toLowerCase();
-        if (lowerText.includes("parle en darija") || lowerText.includes("hder b darija")) {
-            this.currentLang = 'darija';
-            this.addMessageToMain('ai', "Wakha a sidi/lalla! Men daba l'fou9 ghadi nhder m3ak b **Darija**. Kifach n9der n3awnk?");
-            return;
-        } else if (lowerText.includes("parle en arabe") || lowerText.includes("tkellem b l3arbia")) {
-            this.currentLang = 'ar';
-            this.addMessageToMain('ai', "حسناً، سأتحدث معك باللغة **العربية** من الآن فصاعداً. كيف يمكنني مساعدتك؟");
-            return;
-        } else if (lowerText.includes("parle en français") || lowerText.includes("parle français")) {
-            this.currentLang = 'fr';
-            this.addMessageToMain('ai', "D'accord, je vais maintenant te répondre en **Français**. Comment puis-je t'aider ?");
+    // =========================================================================
+    // P2 — MULTIMODALITÉ VISION (PHOTO EXERCICE / BROUILLON) & DICTÉE VOCALE
+    // =========================================================================
+
+    triggerImagePicker() {
+        const inputEl = document.getElementById('ai-image-input');
+        if (inputEl) inputEl.click();
+    },
+
+    handleImageUpload(event) {
+        const file = event?.target?.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            this.showToast("Veuillez sélectionner une image valide (JPG, PNG, WEBP).");
             return;
         }
 
-        this.addMessageToMain('user', text);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                // Compression intelligente côté client (max 1280px, JPEG 0.82) pour envoi ultra-rapide sur 4G
+                const maxDim = 1280;
+                let w = img.width;
+                let h = img.height;
+                if (w > maxDim || h > maxDim) {
+                    if (w > h) {
+                        h = Math.round((h * maxDim) / w);
+                        w = maxDim;
+                    } else {
+                        w = Math.round((w * maxDim) / h);
+                        h = maxDim;
+                    }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+                this.pendingImageDataUrl = compressedDataUrl;
+                this.pendingImageName = file.name || 'exercice_bac.jpg';
+                this.renderPendingImagePreview();
+                this.showToast("Photo d'exercice prête ! Ajoute une consigne ou clique sur Envoyer 📷");
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    },
+
+    renderPendingImagePreview() {
+        const previewBar = document.getElementById('chat-image-preview-bar');
+        if (!previewBar) return;
+
+        if (!this.pendingImageDataUrl) {
+            previewBar.style.display = 'none';
+            previewBar.innerHTML = '';
+            return;
+        }
+
+        previewBar.style.display = 'flex';
+        previewBar.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="${this.pendingImageDataUrl}" alt="Aperçu exercice" style="width:46px; height:46px; object-fit:cover; border-radius:8px; border:1.5px solid var(--primary);">
+                <div>
+                    <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);"><i class="fa-solid fa-camera" style="color:var(--primary);"></i> Photo d'exercice jointe</div>
+                    <div style="font-size:0.72rem; color:var(--text-dim);">Gemini 2.5 Vision va lire et corriger ton document</div>
+                </div>
+            </div>
+            <button type="button" onclick="aiTutor.clearPendingImage()" class="msg-action-btn" style="color:#ef4444; padding:6px 10px;" title="Retirer la photo">
+                <i class="fa-solid fa-xmark"></i> Retirer
+            </button>
+        `;
+    },
+
+    clearPendingImage() {
+        this.pendingImageDataUrl = null;
+        this.pendingImageName = null;
+        const inputEl = document.getElementById('ai-image-input');
+        if (inputEl) inputEl.value = '';
+        this.renderPendingImagePreview();
+    },
+
+    toggleVoiceInput() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            this.showToast("La dictée vocale n'est pas supportée sur ce navigateur (utilise Chrome ou Safari).");
+            return;
+        }
+
+        const voiceBtn = document.getElementById('chat-voice-btn');
+
+        if (this.isListeningVoice && this.recognitionInstance) {
+            this.recognitionInstance.stop();
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        this.recognitionInstance = recognition;
+        recognition.lang = this.currentLang === 'ar' ? 'ar-SA' : this.currentLang === 'darija' ? 'ar-MA' : 'fr-FR';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+            this.isListeningVoice = true;
+            if (voiceBtn) {
+                voiceBtn.classList.add('voice-active');
+                voiceBtn.innerHTML = '<i class="fa-solid fa-microphone-lines fa-beat" style="color:#ef4444;"></i>';
+            }
+            this.showToast("🎙️ Parle maintenant, je t'écoute...");
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results?.[0]?.[0]?.transcript || '';
+            const inputEl = document.getElementById('ai-input-main');
+            if (inputEl && transcript) {
+                inputEl.value = inputEl.value ? `${inputEl.value.trim()} ${transcript}` : transcript;
+                inputEl.focus();
+            }
+        };
+
+        recognition.onerror = () => {
+            this.showToast("Micro interrompu ou non autorisé.");
+        };
+
+        recognition.onend = () => {
+            this.isListeningVoice = false;
+            if (voiceBtn) {
+                voiceBtn.classList.remove('voice-active');
+                voiceBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+            }
+        };
+
+        recognition.start();
+    },
+
+    async sendMessageFromMain(text) {
+        const attachedImage = this.pendingImageDataUrl;
+        const cleanText = (text || '').trim();
+
+        if (!cleanText && !attachedImage) return;
+
+        const finalPrompt = cleanText || (this.currentCourse
+            ? `Analyse cette photo d'exercice sur le chapitre « ${this.currentCourse} » (${this.currentSubject || 'Sciences'}) et rédige la correction complète étape par étape selon le barème du Bac National.`
+            : `Analyse attentivement cette photo d'exercice ou de cours du Bac et fournis une résolution détaillée étape par étape.`);
+
+        const lowerText = finalPrompt.toLowerCase();
+        if (!attachedImage) {
+            if (lowerText.includes("parle en darija") || lowerText.includes("hder b darija")) {
+                this.currentLang = 'darija';
+                this.addMessageToMain('ai', "Wakha a sidi/lalla! Men daba l'fou9 ghadi nhder m3ak b **Darija**. Kifach n9der n3awnk?");
+                return;
+            } else if (lowerText.includes("parle en arabe") || lowerText.includes("tkellem b l3arbia")) {
+                this.currentLang = 'ar';
+                this.addMessageToMain('ai', "حسناً، سأتحدث معك باللغة **العربية** من الآن فصاعداً. كيف يمكنني مساعدتك؟");
+                return;
+            } else if (lowerText.includes("parle en français") || lowerText.includes("parle français")) {
+                this.currentLang = 'fr';
+                this.addMessageToMain('ai', "D'accord, je vais maintenant te répondre en **Français**. Comment puis-je t'aider ?");
+                return;
+            }
+        }
+
+        // Réinitialiser l'aperçu photo dès l'envoi
+        if (attachedImage) {
+            this.clearPendingImage();
+        }
+
+        this.addMessageToMain('user', finalPrompt, null, false, attachedImage);
         const loadingId = 'loading-' + Date.now();
         this.addMessageToMain('ai', `<div class="skeleton" style="height:40px; width:90%"></div>`, loadingId, true);
         try {
-            const response = await this.callGeminiAPI(text);
+            const response = await this.callGeminiAPI(finalPrompt, { imageDataUrl: attachedImage });
             this.removeMessageFromMain(loadingId);
             this.addMessageToMain('ai', response);
         } catch (e) {
@@ -476,7 +641,7 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les formules 
         }
     },
 
-    addMessageToMain(role, text, id = null, isLoading = false) {
+    addMessageToMain(role, text, id = null, isLoading = false, imageDataUrl = null) {
         const container = document.getElementById('ai-messages-main');
         if (!container) return;
         const div = document.createElement('div');
@@ -492,7 +657,21 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les formules 
             div.style.alignSelf = "flex-end";
             div.style.background = "var(--primary-gradient)";
             div.style.color = "white";
-            div.innerText = text;
+            if (imageDataUrl) {
+                const imgEl = document.createElement('img');
+                imgEl.src = imageDataUrl;
+                imgEl.alt = "Photo d'exercice";
+                imgEl.style.maxWidth = "240px";
+                imgEl.style.maxHeight = "200px";
+                imgEl.style.borderRadius = "12px";
+                imgEl.style.display = "block";
+                imgEl.style.marginBottom = "8px";
+                imgEl.style.border = "2px solid rgba(255,255,255,0.4)";
+                div.appendChild(imgEl);
+            }
+            const textSpan = document.createElement('div');
+            textSpan.innerText = text;
+            div.appendChild(textSpan);
         } else {
             div.style.alignSelf = "flex-start";
             div.style.background = "var(--card-bg)";
@@ -1219,7 +1398,7 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les formules 
 Génère un Quiz interactif (QCM) de 5 questions sur le cours : "${courseTitle}" ${subject ? `en ${subject}` : ''}.
 Réponds UNIQUEMENT avec un tableau JSON valide sans texte autour :
 [{"question": "...", "options": ["A", "B", "C", "D"], "answer": 0, "explanation": "..."}]`;
-        const response = await this.callGeminiAPI(systemPrompt);
+        const response = await this.callGeminiAPI(systemPrompt, { jsonMode: true });
         const jsonMatch = response.match(/\[[\s\S]*\]/);
         const cleanJson = jsonMatch ? jsonMatch[0] : response.replace(/```json|```/g, '').trim();
         return JSON.parse(cleanJson);
