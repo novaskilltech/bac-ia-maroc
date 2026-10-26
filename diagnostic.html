@@ -27,7 +27,7 @@
     <meta name="twitter:description" content="أستاذك الخاص بالذكاء الاصطناعي 24h/24 فجميع المواد، غير بـ 199 درهم للعام كامل (أقل من درهم فالنهار) !">
     <meta name="twitter:image" content="https://novabacia.novaskill.tech/assets/og-nova-bac-ia-darija.jpg">
 
-    <link rel="stylesheet" href="css/style.css?v=12">
+    <link rel="stylesheet" href="css/style.css?v=14">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Markdown & Math Rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -35,10 +35,10 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js?v=5"></script>
-    <script src="js/courses-data.js?v=5"></script>
-    <script src="js/ai-tutor.js?v=18"></script>
-    <script src="js/revision-planner.js?v=5"></script>
+    <script src="js/supabase-config.js?v=6"></script>
+    <script src="js/courses-data.js?v=6"></script>
+    <script src="js/ai-tutor.js?v=20"></script>
+    <script src="js/revision-planner.js?v=6"></script>
 </head>
 <body>
     <div class="premium-bg no-print"></div>
@@ -51,10 +51,10 @@
     </div>
 
     <div id="main-content" class="no-print" style="display: none; height: 100vh; flex-direction: column;">
-        <div style="display: flex; flex: 1; overflow: hidden;">
+        <div class="dashboard-shell">
             
-            <!-- LEFT SIDEBAR: Discussions & Raccourcis -->
-            <aside style="width: 265px; background: var(--card-bg); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; padding: 20px;">
+            <!-- LEFT SIDEBAR: Discussions & Raccourcis (Desktop) -->
+            <aside class="dashboard-sidebar">
                 <button onclick="aiTutor.newChat()" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--primary); background: rgba(6, 182, 212, 0.12); color: var(--text-main); font-weight: 700; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;">
                     <i class="fa-solid fa-plus" style="color: var(--primary);"></i> Nouvelle Séance IA
                 </button>
@@ -77,10 +77,10 @@
             </aside>
 
             <!-- Main Dashboard Area -->
-            <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column;">
+            <div class="dashboard-scroll-area">
                 <!-- Navbar ergonomique -->
                 <nav class="dashboard-nav">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="dashboard-brand">
                         <img src="assets/logo-nova-bac-ia.svg" alt="NOVA BAC IA" style="width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 0 16px rgba(6, 182, 212, 0.28);">
                         <div>
                             <h3 style="font-weight: 800; letter-spacing: -0.5px; margin: 0; font-size: 1.15rem;">NOVA BAC <span style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">IA</span></h3>
@@ -91,16 +91,16 @@
                     <!-- Onglets Centraux Ergonomiques -->
                     <div class="nav-tabs">
                         <button type="button" id="tab-btn-chat" class="nav-tab active" onclick="switchMainTab('chat')">
-                            <i class="fa-solid fa-robot"></i> Assistant & Exercices
+                            <i class="fa-solid fa-robot"></i> <span>Assistant & Exercices</span>
                         </button>
                         <button type="button" id="tab-btn-docs" class="nav-tab" onclick="switchMainTab('docs')">
-                            <i class="fa-solid fa-folder-bookmark"></i> Mes Documents & Fiches
+                            <i class="fa-solid fa-folder-bookmark"></i> <span>Mes Fiches</span>
                             <span id="docs-count-badge" style="background: rgba(2,132,199,0.2); padding: 1px 7px; border-radius: 10px; font-size: 0.7rem;">0</span>
                         </button>
                     </div>
 
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="text-align: right; margin-right: 6px;">
+                    <div class="dashboard-user-controls">
+                        <div class="dashboard-user-info">
                             <div id="user-name" style="font-weight: 700; font-size: 0.9rem;">...</div>
                             <div id="user-track-badge" style="font-size: 0.7rem; color: var(--primary); font-weight: 600;">Bac Sciences</div>
                         </div>
@@ -114,27 +114,46 @@
                 </nav>
 
                 <!-- Grille Principale -->
-                <div class="bento-grid" style="padding: 22px; gap: 22px; max-width: 1600px;">
+                <div class="bento-grid dashboard-grid">
                     
                     <!-- COLONNE GAUCHE : Bibliothèque des Cours & Chapitres -->
-                    <div style="grid-column: span 1; display: flex; flex-direction: column; gap: 18px;">
+                    <div id="col-courses" class="dashboard-col-left">
                         <div class="bento-item animate" style="padding: 18px; display: flex; flex-direction: column; flex: 1;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                 <h3 style="margin: 0;"><i class="fa-solid fa-book-bookmark"></i> Bibliothèque Bac</h3>
                             </div>
                             <input type="text" id="course-search" placeholder="Rechercher un chapitre (ex: Ondes, Suites...)" oninput="filterCourses()" style="padding: 10px 14px; font-size: 0.82rem; margin-bottom: 14px; border-radius: 10px;">
-                            <div id="courses-library" style="max-height: 620px; overflow-y: auto; padding-right: 4px;"></div>
+                            <div id="courses-library" class="courses-library-box"></div>
                         </div>
                     </div>
 
-                    <!-- COLONNE CENTRALE (2 Colonnes) : Assistant IA OU Carnet de Documents -->
-                    <div class="bento-item animate" style="grid-column: span 2; display: flex; flex-direction: column; min-height: 760px; padding: 22px;">
+                    <!-- COLONNE CENTRALE (2 Colonnes sur Desktop, 1ère en haut sur Mobile) : Assistant IA OU Carnet de Documents -->
+                    <div id="col-main" class="bento-item animate dashboard-col-main">
                         
+                        <!-- Barre d'actions rapide Mobile (remplace l'aside sur smartphone/tablette) -->
+                        <div class="mobile-chat-actions">
+                            <button type="button" onclick="aiTutor.newChat()" class="msg-action-btn" style="border-color: var(--primary); color: var(--primary); font-weight: 700;">
+                                <i class="fa-solid fa-plus"></i> Nouvelle Séance
+                            </button>
+                            <button type="button" onclick="aiTutor.saveCurrentChat()" class="msg-action-btn">
+                                <i class="fa-solid fa-floppy-disk"></i> Sauvegarder
+                            </button>
+                            <button type="button" onclick="aiTutor.printFullDiagnosticAndPlan()" class="msg-action-btn">
+                                <i class="fa-solid fa-file-pdf" style="color: var(--primary);"></i> Bilan PDF
+                            </button>
+                            <button type="button" onclick="scrollToMobileSection('col-courses')" class="msg-action-btn">
+                                <i class="fa-solid fa-book-bookmark" style="color: #f59e0b;"></i> Chapitres
+                            </button>
+                            <button type="button" onclick="scrollToMobileSection('col-planning')" class="msg-action-btn">
+                                <i class="fa-solid fa-calendar-day" style="color: #10b981;"></i> Planning 30j
+                            </button>
+                        </div>
+
                         <!-- VUE 1 : ASSISTANT IA & EXERCICES -->
                         <div id="view-chat-panel" style="display: flex; flex-direction: column; flex: 1; height: 100%;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div class="chat-panel-header">
                                 <div>
-                                    <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px;">
+                                    <h2 class="chat-panel-title">
                                         <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> Tuteur Pédagogique BAC IA
                                     </h2>
                                     <p id="profile-strategy-subtitle" style="font-size: 0.8rem; color: var(--text-dim); margin-top: 3px;">Méthodologie adaptée à ton profil d'apprentissage</p>
@@ -148,21 +167,21 @@
                             <div id="active-course-banner" style="display: none; justify-content: space-between; align-items: center; padding: 10px 16px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 12px; margin-bottom: 12px; font-size: 0.85rem; flex-wrap: wrap; gap: 10px;"></div>
 
                             <!-- Barre de raccourcis pédagogiques rapides -->
-                            <div id="prompts-list" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;"></div>
+                            <div id="prompts-list" class="prompts-scroll-row"></div>
 
                             <!-- Barre d'outils Studio Graphique & Schémas Scientifiques -->
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
+                            <div class="visual-studio-bar">
                                 <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
                                     <i class="fa-solid fa-compass-drafting" style="color: var(--primary);"></i> Studio Visuel :
                                 </span>
                                 <button type="button" class="visual-tool-pill" onclick="aiTutor.requestVisual('mathplot')">
-                                    <i class="fa-solid fa-chart-line" style="color: #06b6d4;"></i> Tracer Courbe / Fonction
+                                    <i class="fa-solid fa-chart-line" style="color: #06b6d4;"></i> Courbe f(x)
                                 </button>
                                 <button type="button" class="visual-tool-pill" onclick="aiTutor.requestVisual('physics')">
-                                    <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Dessin Physique / Chimie
+                                    <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Schéma Physique
                                 </button>
                                 <button type="button" class="visual-tool-pill" onclick="aiTutor.requestVisual('anatomy')">
-                                    <i class="fa-solid fa-dna" style="color: #10b981;"></i> Fiche Anatomique / SVT
+                                    <i class="fa-solid fa-dna" style="color: #10b981;"></i> Planche SVT
                                 </button>
                             </div>
 
@@ -172,11 +191,11 @@
                             </div>
 
                             <!-- Zone de saisie ergonomique -->
-                            <div style="margin-top: 16px; display: flex; gap: 10px; align-items: center;">
-                                <input type="text" id="ai-input-main" placeholder="Pose ta question, demande une courbe f(x), un schéma de physique, une fiche SVT ou un exercice..." 
-                                       style="flex: 1; padding: 16px 20px; border-radius: 14px; border: 1.5px solid var(--glass-border); background: var(--input-bg); color: var(--text-main); font-size: 0.95rem;">
-                                <button onclick="sendChatMessage()" class="btn btn-primary" style="padding: 15px 24px; border-radius: 14px; display: flex; align-items: center; gap: 8px;">
-                                    <span>Envoyer</span> <i class="fa-solid fa-paper-plane"></i>
+                            <div class="chat-input-bar">
+                                <input type="text" id="ai-input-main" placeholder="Pose ta question, demande une courbe f(x), un schéma ou un exercice..." 
+                                       class="chat-input-field">
+                                <button onclick="sendChatMessage()" class="btn btn-primary chat-send-btn">
+                                    <span class="send-btn-label">Envoyer</span> <i class="fa-solid fa-paper-plane"></i>
                                 </button>
                             </div>
                         </div>
@@ -205,7 +224,7 @@
                     </div>
 
                     <!-- COLONNE DROITE : Compte à rebours, Planning 30j & Diagnostic -->
-                    <div style="grid-column: span 1; display: flex; flex-direction: column; gap: 18px;">
+                    <div id="col-planning" class="dashboard-col-right">
                         
                         <div class="bento-item animate" style="text-align: center; padding: 18px; display: flex; justify-content: space-around; align-items: center;">
                             <div>
@@ -298,6 +317,13 @@
                 docsPanel.style.display = 'none';
                 btnChat.classList.add('active');
                 btnDocs.classList.remove('active');
+            }
+        }
+
+        function scrollToMobileSection(sectionId) {
+            const el = document.getElementById(sectionId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 

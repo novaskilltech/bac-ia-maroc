@@ -1610,6 +1610,308 @@ aside {
     }
 }
 
+/* =========================================================================
+   ESPACE ÉLÈVE (diagnostic.html) — ARCHITECTURE DESKTOP & MOBILE RESPONSIVE
+   ========================================================================= */
 
+.dashboard-shell {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
 
+.dashboard-sidebar {
+    width: 265px;
+    background: var(--card-bg);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    flex-shrink: 0;
+}
 
+.dashboard-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-user-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-user-info {
+    text-align: right;
+    margin-right: 6px;
+}
+
+.dashboard-grid {
+    padding: 22px;
+    gap: 22px;
+    max-width: 1600px;
+    width: 100%;
+}
+
+.dashboard-col-left {
+    grid-column: span 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.dashboard-col-main {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 760px;
+    padding: 22px;
+}
+
+.dashboard-col-right {
+    grid-column: span 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.courses-library-box {
+    max-height: 620px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.mobile-chat-actions {
+    display: none;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.chat-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chat-panel-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.prompts-scroll-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.visual-studio-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.chat-input-bar {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.chat-input-field {
+    flex: 1;
+    padding: 16px 20px;
+    border-radius: 14px;
+    border: 1.5px solid var(--glass-border);
+    background: var(--input-bg);
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.chat-send-btn {
+    padding: 15px 24px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* Tablette & Mobile (<= 1100px) : 1 seule colonne, Tuteur IA en premier ! */
+@media (max-width: 1100px) {
+    .dashboard-sidebar {
+        display: none !important;
+    }
+
+    .mobile-chat-actions {
+        display: flex;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        padding: 14px;
+        gap: 16px;
+    }
+
+    .dashboard-col-main {
+        grid-column: span 1 !important;
+        order: 1;
+        min-height: auto;
+        padding: 16px;
+    }
+
+    .dashboard-col-left {
+        grid-column: span 1 !important;
+        order: 2;
+    }
+
+    .dashboard-col-right {
+        grid-column: span 1 !important;
+        order: 3;
+    }
+
+    .courses-library-box {
+        max-height: 360px;
+    }
+}
+
+/* Smartphone (<= 768px) : Optimisation ergonomique tactile */
+@media (max-width: 768px) {
+    #main-content {
+        height: auto !important;
+        min-height: 100vh;
+    }
+
+    .dashboard-shell {
+        overflow: visible;
+    }
+
+    .dashboard-scroll-area {
+        overflow-y: visible;
+    }
+
+    .dashboard-nav {
+        padding: 10px 14px;
+        gap: 10px;
+    }
+
+    .dashboard-brand img {
+        width: 34px !important;
+        height: 34px !important;
+    }
+
+    .dashboard-brand h3 {
+        font-size: 1rem !important;
+    }
+
+    .dashboard-user-info {
+        display: none;
+    }
+
+    /* Afficher le bouton thème dans la navbar de diagnostic.html sur mobile */
+    .dashboard-nav #theme-toggle {
+        display: inline-flex !important;
+    }
+
+    .nav-tabs {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .nav-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 0.78rem;
+    }
+
+    .mobile-chat-actions {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mobile-chat-actions .msg-action-btn {
+        flex-shrink: 0;
+        padding: 7px 12px;
+        font-size: 0.76rem;
+    }
+
+    .chat-panel-title {
+        font-size: 1.08rem;
+    }
+
+    .prompts-scroll-row {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .prompts-scroll-row button {
+        flex-shrink: 0;
+    }
+
+    .visual-studio-bar {
+        gap: 6px;
+    }
+
+    .visual-tool-pill {
+        padding: 6px 10px;
+        font-size: 0.73rem;
+    }
+
+    .chat-messages-box {
+        height: 56vh;
+        min-height: 340px;
+        max-height: 520px;
+        padding: 12px;
+    }
+
+    .msg-ai,
+    .msg-user {
+        max-width: 96% !important;
+        padding: 13px 15px !important;
+        font-size: 0.92rem;
+    }
+
+    .chat-input-bar {
+        margin-top: 12px;
+        gap: 8px;
+    }
+
+    .chat-input-field {
+        padding: 13px 14px;
+        font-size: 0.9rem;
+    }
+
+    .chat-send-btn {
+        padding: 13px 16px;
+    }
+
+    .send-btn-label {
+        display: none;
+    }
+}

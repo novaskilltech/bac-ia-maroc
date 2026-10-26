@@ -85,16 +85,16 @@ USING (
 );
 
 -- C. UPDATE : 
--- L'utilisateur ne peut modifier que ses propres donnees de quiz/profils (interdiction de s'auto-valider ou devenir admin)
+-- L'utilisateur ne peut modifier que ses propres donnees de quiz/profils (interdiction absolue de s'auto-valider, modifier payment_status ou devenir admin)
 CREATE POLICY "profiles_update_own"
 ON public.profiles
 FOR UPDATE
 USING (auth.uid() = id)
 WITH CHECK (
     auth.uid() = id
-    -- Empeche l'utilisateur normal de changer son role ou son statut de validation
-    AND role = (SELECT role FROM public.profiles WHERE id = auth.uid())
-    AND status = (SELECT status FROM public.profiles WHERE id = auth.uid())
+    AND role = (SELECT p.role FROM public.profiles p WHERE p.id = auth.uid())
+    AND status = (SELECT p.status FROM public.profiles p WHERE p.id = auth.uid())
+    AND payment_status = (SELECT p.payment_status FROM public.profiles p WHERE p.id = auth.uid())
 );
 
 -- D. ADMIN FULL ACCESS : L'admin peut mettre a jour tous les profils (valider, refuser, assigner role)
@@ -103,6 +103,38 @@ ON public.profiles
 FOR UPDATE
 USING (public.is_admin())
 WITH CHECK (public.is_admin());
+
+-- 4bis. BOUCLIER ANTI-TRICHE SQL (Trigger BEFORE UPDATE)
+-- Empeche tout utilisateur non-admin (role JWT 'authenticated') de modifier les colonnes critiques
+-- meme en cas d'appel direct a l'API REST Supabase depuis la console F12.
+CREATE OR REPLACE FUNCTION public.protect_profile_privileged_fields()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  -- Autoriser le service_role (webhooks Stripe, administration serveur) et les admins verifies
+  IF current_setting('request.jwt.claim.role', true) = 'service_role' OR public.is_admin() THEN
+    RETURN NEW;
+  END IF;
+
+  -- Verrouiller les champs sensibles aux valeurs existantes en base
+  NEW.role := OLD.role;
+  NEW.status := OLD.status;
+  NEW.payment_status := OLD.payment_status;
+  NEW.validated_at := OLD.validated_at;
+  NEW.admin_notes := OLD.admin_notes;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_protect_profile_privileged_fields ON public.profiles;
+CREATE TRIGGER trg_protect_profile_privileged_fields
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.protect_profile_privileged_fields();
 
 -- 5. Trigger d'initialisation automatique a l'inscription Auth Supabase (Optionnel mais hautement recommande)
 CREATE OR REPLACE FUNCTION public.handle_new_user()

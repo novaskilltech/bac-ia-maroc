@@ -13,27 +13,36 @@ serve(async (req) => {
   try {
     const body = await req.json()
     const prompt = body.prompt || ''
-    const systemPrompt = body.system_instruction || body.systemPrompt || 'Tu es un tuteur pédagogique expert du Baccalauréat Scientifique au Maroc.'
+    const systemPrompt = body.system_instruction || body.systemPrompt || 'Tu es un tuteur pédagogique expert du Baccalauréat au Maroc.'
 
-    const fallbackKey = ['sk', 'or', 'v1', 'e3c6179300cf6123b25b2caea1fcce6b' + '04734703199f2bb23bcef254a5ff977f'].join('-')
-    const openRouterKey = Deno.env.get('OPENROUTER_API_KEY') || fallbackKey
+    const openRouterKey = Deno.env.get('OPENROUTER_API_KEY')
+    if (!openRouterKey) {
+      return new Response(
+        JSON.stringify({ error: 'OPENROUTER_API_KEY non configurée sur le serveur.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const messages = Array.isArray(body.messages) && body.messages.length > 0
+      ? body.messages
+      : [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt }
+        ]
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openRouterKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://bac-ia-maroc.ma',
-        'X-Title': 'BAC IA MAROC'
+        'HTTP-Referer': 'https://novabacia.novaskill.tech',
+        'X-Title': 'NOVA BAC IA MAROC'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 2500
+        model: body.model || 'google/gemini-2.5-flash',
+        messages: messages,
+        temperature: 0.65,
+        max_tokens: 3000
       })
     })
 
@@ -62,3 +71,4 @@ serve(async (req) => {
     )
   }
 })
+

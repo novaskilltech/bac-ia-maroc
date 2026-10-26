@@ -17,26 +17,38 @@ const revisionPlanner = {
     },
 
     getTargetExamDate(user) {
-        const session = user.bac_session || 'national';
+        const session = (user && user.bac_session) ? user.bac_session : 'national';
         const target = this.calendar.find(c => c.session_name === (session === 'national_et_rattrapage' ? 'national' : session));
-        return target ? target.start_date : '2026-06-04';
+        let rawDate = target ? target.start_date : '2026-06-04';
+        let parsed = new Date(rawDate);
+        const now = new Date();
+
+        // Si la date d'examen configurée est déjà passée, basculer automatiquement sur la session de juin prochain
+        if (isNaN(parsed.getTime()) || parsed <= now) {
+            const nextYear = (now.getMonth() >= 5) ? now.getFullYear() + 1 : now.getFullYear();
+            const monthDay = session === 'rattrapage' ? '07-06' : '06-04';
+            parsed = new Date(`${nextYear}-${monthDay}T08:00:00Z`);
+        }
+        return parsed.toISOString().split('T')[0];
     },
 
     async generateRevisionPlan(user) {
         const targetDate = new Date(this.getTargetExamDate(user));
         const today = new Date();
-        const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
-        
-        if (diffDays <= 0) return null;
+        const rawDiffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+        const diffDays = rawDiffDays > 0 ? rawDiffDays : 45;
+
+        // Générer un programme intensif et structuré sur 30 jours glissants (évite de saturer Supabase avec >900 lignes)
+        const planDays = Math.min(diffDays, 30);
 
         const dailyMinutes = user.daily_time_minutes || 60;
         const taskCount = dailyMinutes <= 30 ? 1 : dailyMinutes <= 60 ? 2 : dailyMinutes <= 120 ? 3 : 4;
         
-        // Simuler une génération de plan basée sur les cours disponibles
+        // Génération de plan basée sur les cours disponibles
         const subjects = Object.keys(COURSES_DATA);
         const planTasks = [];
         
-        for (let i = 0; i < diffDays; i++) {
+        for (let i = 0; i < planDays; i++) {
             const currentDay = new Date();
             currentDay.setDate(today.getDate() + i);
             const dateStr = currentDay.toISOString().split('T')[0];
@@ -51,7 +63,7 @@ const revisionPlanner = {
                     subject: subject,
                     chapter: lesson.title,
                     skill: "Consolidation",
-                    task_type: this.getTaskTypeByProfile(user.main_learning_profile, diffDays - i),
+                    task_type: this.getTaskTypeByProfile(user.main_learning_profile, planDays - i),
                     title: `Révision : ${lesson.title}`,
                     description: `Séance ciblée sur ${lesson.title} (${subject}).`,
                     estimated_minutes: Math.floor(dailyMinutes / taskCount),

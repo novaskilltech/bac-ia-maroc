@@ -200,8 +200,11 @@ const auth = {
         this.authModal.style.display = 'none';
         this.landingSection.style.display = 'none';
         this.featuresSection.style.display = 'none';
+
+        const stickyBar = document.querySelector('.mobile-sticky-cta');
+        if (stickyBar) stickyBar.style.display = 'none';
         
-        // 1. Si rôle admin -> aller directement sur admin.html ou laisser choisir
+        // 1. Si rôle admin -> aller directement sur admin.html
         if (this.profile.role === 'admin') {
             window.location.href = 'admin.html';
             return;
@@ -225,7 +228,7 @@ const auth = {
                 // Personnaliser le message WhatsApp avec les infos de l'élève
                 const waBtn = paymentSection.querySelector('a[href*="wa.me"]');
                 if (waBtn) {
-                    const refMsg = `Bonjour, voici ma preuve de paiement (199 DH) pour BAC IA MAROC.\n\n*Élève* : ${this.profile.firstname || ''}\n*Email* : ${this.profile.email || ''}\n*Tél/WhatsApp* : ${this.profile.whatsapp || ''}\n*Filière* : ${this.profile.track || 'Sciences'}`;
+                    const refMsg = `Bonjour, voici ma preuve de paiement (199 DH) pour NOVA BAC IA.\n\n*Élève* : ${this.profile.firstname || ''}\n*Email* : ${this.profile.email || ''}\n*Tél/WhatsApp* : ${this.profile.whatsapp || ''}\n*Filière* : ${this.profile.track || 'Sciences'}`;
                     waBtn.href = `https://wa.me/212716014148?text=${encodeURIComponent(refMsg)}`;
                 }
 
@@ -265,6 +268,33 @@ const auth = {
 
         // 4. Si validé et quiz complété -> vers le dashboard
         window.location.href = 'diagnostic.html';
+    },
+
+    async refreshPaymentStatus(btnElement) {
+        if (btnElement) {
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Vérification en cours...';
+        }
+        try {
+            await this.fetchProfile();
+            if (this.profile && (this.profile.status === 'valide' || this.profile.role === 'admin')) {
+                window.location.href = 'diagnostic.html';
+                return;
+            }
+            alert("⏳ Ton compte est toujours en attente de validation. Si tu viens de payer par Carte Bancaire, patiente quelques secondes et réessaie. Si tu as payé par CashPlus/WafaCash, envoie ton reçu sur WhatsApp.");
+        } catch (e) {
+            console.error(e);
+        } finally {
+            if (btnElement) {
+                btnElement.disabled = false;
+                btnElement.innerHTML = '<i class="fa-solid fa-rotate"></i> J\'ai payé — Vérifier mon accès';
+            }
+        }
+    },
+
+    async signOutAndReset() {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'index.html';
     }
 };
 

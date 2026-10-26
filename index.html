@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=13">
+    <link rel="stylesheet" href="css/style.css?v=14">
 </head>
 <body>
 
@@ -603,6 +603,16 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Actions de vérification directe & changement de compte -->
+                <div style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                    <button type="button" onclick="auth.refreshPaymentStatus(this)" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border-color: var(--primary); color: var(--primary); font-weight: 700;">
+                        <i class="fa-solid fa-rotate"></i> J'ai payé — Vérifier mon accès
+                    </button>
+                    <button type="button" onclick="auth.signOutAndReset()" style="background: transparent; border: none; color: var(--text-dim); font-size: 0.85rem; cursor: pointer; text-decoration: underline; padding: 6px;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Se déconnecter / Changer de compte
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -614,10 +624,10 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js?v=5"></script>
-    <script src="js/main.js?v=5"></script>
-    <script src="js/auth.js?v=5"></script>
-    <script src="js/questionnaire.js?v=5"></script>
+    <script src="js/supabase-config.js?v=6"></script>
+    <script src="js/main.js?v=6"></script>
+    <script src="js/auth.js?v=6"></script>
+    <script src="js/questionnaire.js?v=6"></script>
     <script>
         function applyTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';

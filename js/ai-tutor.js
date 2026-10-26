@@ -15,8 +15,7 @@ const aiTutor = {
         this.checkModelStatus();
     },
 
-    // Clé OpenRouter intégrée pour l'accès natif de tous les élèves à google/gemini-2.5-flash
-    openRouterKey: ['sk', 'or', 'v1', 'e3c6179300cf6123b25b2caea1fcce6b' + '04734703199f2bb23bcef254a5ff977f'].join('-'),
+    // Modèle par défaut (clé API protégée exclusivement côté serveur dans /api/chat et Supabase Edge Function)
     defaultModel: 'google/gemini-2.5-flash',
 
     async checkModelStatus() {
@@ -25,17 +24,27 @@ const aiTutor = {
 
         badge.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color:var(--primary);"></i> Connexion IA...';
         try {
-            const res = await fetch('https://openrouter.ai/api/v1/auth/key', {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${this.openRouterKey}` }
-            });
+            const res = await fetch('/api/chat', { method: 'GET' });
             if (res.ok) {
-                badge.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Gemini 2.5 Actif';
+                badge.innerHTML = '<i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> Gemini 2.5 Sécurisé';
                 badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
                 return true;
             }
         } catch (e) {
-            console.warn("Status check warning:", e);
+            // Ignorer si serveur statique local sans /api/chat
+        }
+
+        try {
+            const { data, error } = await supabaseClient.functions.invoke('gemini-proxy', {
+                body: { prompt: 'ping', systemPrompt: 'OK' }
+            });
+            if (!error && data?.text) {
+                badge.innerHTML = '<i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> Gemini 2.5 Edge Actif';
+                badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                return true;
+            }
+        } catch (e) {
+            console.warn("Edge status check warning:", e);
         }
 
         badge.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Gemini 2.5 Prêt';
@@ -82,7 +91,6 @@ const aiTutor = {
         const systemPrompt = this.buildDynamicPrompt(user, langName, memoryText);
 
         let rawResponse = null;
-        const modelsToTry = ['google/gemini-2.5-flash', 'google/gemini-2.0-flash-001'];
         let lastErr = null;
 
         const historyMsgs = (this.currentMessages || []).slice(-6).map(m => ({
@@ -90,38 +98,64 @@ const aiTutor = {
             content: m.content
         }));
 
-        for (const modelName of modelsToTry) {
-            try {
-                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${this.openRouterKey}`,
-                        'Content-Type': 'application/json',
-                        'HTTP-Referer': window.location.origin || 'http://localhost:8080',
-                        'X-Title': 'BAC IA MAROC'
-                    },
-                    body: JSON.stringify({
-                        model: modelName,
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            ...historyMsgs,
-                            { role: 'user', content: promptText }
-                        ],
-                        temperature: 0.7,
-                        max_tokens: 4500
-                    })
-                });
+        const messagesPayload = [
+            { role: 'system', content: systemPrompt },
+            ...historyMsgs,
+            { role: 'user', content: promptText }
+        ];
 
-                if (response.ok) {
-                    const data = await response.json();
-                    rawResponse = data.choices?.[0]?.message?.content;
-                    if (rawResponse) break;
-                } else {
-                    const errData = await response.json().catch(() => ({}));
-                    lastErr = errData.error?.message || `Erreur HTTP ${response.status}`;
+        // Récupérer le token JWT de la session Supabase pour authentifier l'appel serveur
+        let accessToken = '';
+        try {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            accessToken = session?.access_token || '';
+        } catch (e) {}
+
+        // A. Appel principal via le Proxy Serveur sécurisé (/api/chat)
+        try {
+            const headers = { 'Content-Type': 'application/json' };
+            if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    prompt: promptText,
+                    systemPrompt: systemPrompt,
+                    messages: messagesPayload,
+                    temperature: 0.7,
+                    max_tokens: 4000
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                rawResponse = data.text || data.choices?.[0]?.message?.content;
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                lastErr = errData.error || `Erreur HTTP ${response.status}`;
+            }
+        } catch (err) {
+            lastErr = err.message;
+        }
+
+        // B. Relais de secours via Supabase Edge Function (gemini-proxy)
+        if (!rawResponse) {
+            try {
+                const { data, error } = await supabaseClient.functions.invoke('gemini-proxy', {
+                    body: {
+                        prompt: promptText,
+                        systemPrompt: systemPrompt,
+                        messages: messagesPayload
+                    }
+                });
+                if (!error && data?.text) {
+                    rawResponse = data.text;
+                } else if (error) {
+                    lastErr = error.message || lastErr;
                 }
-            } catch (err) {
-                lastErr = err.message;
+            } catch (edgeErr) {
+                lastErr = lastErr || edgeErr.message;
             }
         }
 
@@ -129,7 +163,6 @@ const aiTutor = {
             throw new Error(lastErr);
         }
 
-        // C. Si aucune clé ni proxy n'est configuré, fournir un générateur pédagogique autonome de secours
         if (!rawResponse) {
             throw new Error("MODÈLE_NON_CONFIGURÉ");
         }
@@ -356,6 +389,11 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les formules 
         this.currentCourse = task.chapter;
         this.currentSubject = task.subject;
         this.updateActiveCourseBanner();
+        if (typeof switchMainTab === 'function') switchMainTab('chat');
+        const mainCol = document.getElementById('col-main');
+        if (mainCol && window.innerWidth <= 1100) {
+            mainCol.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         const msg = `Je commence ma tâche de révision : **${task.title}** en ${task.subject} (${task.chapter}). C'est une séance de type *${task.task_type}*. Aide-moi à réussir !`;
         this.sendMessageFromMain(msg);
     },
@@ -1059,6 +1097,10 @@ Utilise LaTeX ($...$ pour l'inline et $$...$$ pour les blocs) pour les formules 
         this.currentSubject = subject;
         this.updateActiveCourseBanner();
         if (typeof switchMainTab === 'function') switchMainTab('chat');
+        const mainCol = document.getElementById('col-main');
+        if (mainCol && window.innerWidth <= 1100) {
+            mainCol.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         this.sendMessageFromMain(`Génère ma fiche de révision structurée pour le cours : **${title}** en ${subject}.`);
     },
 
